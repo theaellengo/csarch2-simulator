@@ -1,34 +1,42 @@
-var nums = new Array(64)
-var combifield = new Array(5)
-var eprime = 398
+//User Input
+var finput = 1.003
+var exp = 10
 
-// User Input
-var dec = [7, 1, 2, 3, 6, 4, 5, 1, 2, 3, 6, 7, 5, 4, 3, 1]
-var exp = 15
-var sign = 0
+var sign = finput >= 0 ? 0 : 1
+while (finput % 1 != 0) {
+  if (finput > 0) {
+    finput *= 10
+    exp -= 1
+  } else {
+    finput /= 10
+    exp += 1
+  }
+}
 
+var temp = finput.toString().split('')
+var dec = new Array(16).fill(0)
 var i
-for (i = 0; i < nums.length; i++) {
-  nums[i] = dec[i] ? dec[i] : 0
+for (i = 0; i < temp.length; i++) {
+  dec[16 - temp.length + i] = temp[i]
 }
+dec = dec.map(x => {
+  return parseInt(x)
+})
+console.log('Decimal: ' + dec)
+console.log('Exponent: ' + exp)
 
-eprimebin = decToBin(eprime + exp, 10)
+var eprime = decToBin(398 + exp, 10)
+var cf = getcf(dec[0])
+var econt = eprime.slice(2, 10)
 
-if (dec[0] < 8) {
-  combifield = decToBin(dec[0], 5)
-  combifield[0] = eprimebin[0]
-  combifield[1] = eprimebin[1]
-} else {
-  combifield = [1, 1, 0, 0]
-  combifield[4] = dec[0] == 8 ? 0 : 1
-}
+var nums = [sign, ...cf, ...econt]
+console.log('Sign, CF, Econt: ' + nums)
 
-econt = eprimebin.slice(2, 10)
-
-console.log(sign)
-console.log(combifield)
-console.log(econt)
-
+/**
+ * @param {int} num the integer to be converted to binary
+ * @param {int} len the length of the array
+ * @return {Array[int]} the binary equivalent of parameter num
+ */
 function decToBin(num, len) {
   var a = new Array(len)
   var rem = num
@@ -37,4 +45,31 @@ function decToBin(num, len) {
     rem = ~~(rem / 2)
   }
   return a
+}
+
+/**
+ * @param {int} msb the most significant digit
+ * @returns {Array[int]} the combination field
+ */
+function getcf(msb) {
+  var a = new Array(5)
+  if (msb < 8) {
+    a = decToBin(msb, 5)
+    a[0] = eprime[0]
+    a[1] = eprime[1]
+  } else {
+    a = [1, 1, 0, 0]
+    a[4] = msb == 8 ? 0 : 1
+  }
+  return a
+}
+
+/** TO DO: denselyPacked
+ *    @param {Array[int]} nums the packed bcd
+ *    @returns {Array[int]} the densley packed bcd
+ **/
+function denselyPacked(nums) {
+  var bin = nums.map(x => decToBin(x, 4))
+  var bins = [...bin[0], ...bin[1], ...bin[2]]
+  return []
 }
