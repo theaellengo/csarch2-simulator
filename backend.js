@@ -1,5 +1,5 @@
 //User Input
-var finput = 1.003
+var finput = 13232.003
 var exp = 10
 
 var sign = finput >= 0 ? 0 : 1
@@ -31,6 +31,10 @@ var econt = eprime.slice(2, 10)
 
 var nums = [sign, ...cf, ...econt]
 console.log('Sign, CF, Econt: ' + nums)
+
+for (i = 0; i < nums.length; i += 4) {
+  console.log(binToHex(nums.slice(i, i + 4)))
+}
 
 /**
  * @param {int} num the integer to be converted to binary
@@ -72,4 +76,29 @@ function denselyPacked(nums) {
   var bin = nums.map(x => decToBin(x, 4))
   var bins = [...bin[0], ...bin[1], ...bin[2]]
   return []
+}
+
+/**
+ * TO DO: binToHex
+ * @param {Array[Int]} bins binary array of size 4
+ * @returns {char} the hex equivalent of bins
+ */
+function binToHex(bins) {
+  let map = new Map([
+    [10, 'A'],
+    [11, 'B'],
+    [12, 'C'],
+    [13, 'D'],
+    [14, 'E'],
+    [15, 'F']
+  ])
+
+  var i
+  var sum = 0
+  for (i = 0; i < 4; i++) {
+    bins[i] *= Math.pow(2, 3 - i)
+    sum += bins[i]
+  }
+
+  return sum < 10 ? sum : map.get(sum)
 }
