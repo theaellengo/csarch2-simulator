@@ -17,11 +17,8 @@ var temp = finput.toString().split('')
 var dec = new Array(16).fill(0)
 var i
 for (i = 0; i < temp.length; i++) {
-  dec[16 - temp.length + i] = temp[i]
+  dec[16 - temp.length + i] = parseInt(temp[i])
 }
-dec = dec.map(x => {
-  return parseInt(x)
-})
 console.log('Decimal: ' + dec)
 console.log('Exponent: ' + exp)
 
@@ -79,7 +76,7 @@ function denselyPacked(nums) {
 }
 
 /**
- * TO DO: binToHex
+ * binToHex
  * @param {Array[Int]} bins binary array of size 4
  * @returns {char} the hex equivalent of bins
  */
