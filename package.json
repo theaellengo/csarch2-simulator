@@ -1,0 +1,31 @@
+{
+  "name": "csarch2-simulator",
+  "version": "1.0.0",
+  "description": "• Input: binary mantissa and base-2 (i.e., 101.01x25) and NaN\r • Output: binary output with space as well as well as its hexadecimal equivalent (with\r option to paste result in notepad)",
+  "main": "backend.js",
+  "scripts": {
+    "start": "node server",
+    "server": "nodemon server"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/theaellengo/csarch2-simulator.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/theaellengo/csarch2-simulator/issues"
+  },
+  "homepage": "https://github.com/theaellengo/csarch2-simulator#readme",
+  "dependencies": {
+    "config": "^3.3.3",
+    "express": "^4.17.1",
+    "express-handlebars": "^5.2.0",
+    "express-validator": "^6.9.2"
+  },
+  "devDependencies": {
+    "concurrently": "^5.3.0",
+    "nodemon": "^2.0.7"
+  }
+}
