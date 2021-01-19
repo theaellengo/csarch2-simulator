@@ -4,8 +4,8 @@ module.exports = {
   },
   getinput: function (req, res) {
     //User Input
-    var finput = req.body.inputFloat;
-    var exp = req.body.inputExp;
+    var finput = parseFloat(req.body.inputFloat);
+    var exp = parseInt(req.body.inputExp);
     console.log(finput);
     console.log(exp);
 
@@ -106,5 +106,9 @@ module.exports = {
 
       return sum < 10 ? sum : map.get(sum);
     }
+    res.render('index', {
+      binary: dec, // temp (not result)
+      hex: binToHex(dec) // temp (not result)
+    });
   }
 };
