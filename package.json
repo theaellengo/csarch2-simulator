@@ -4,6 +4,7 @@
   "description": "• Input: binary mantissa and base-2 (i.e., 101.01x25) and NaN\r • Output: binary output with space as well as well as its hexadecimal equivalent (with\r option to paste result in notepad)",
   "main": "backend.js",
   "scripts": {
+    "build": "node build",
     "start": "node server",
     "server": "nodemon server"
   },
@@ -17,7 +18,7 @@
   "bugs": {
     "url": "https://github.com/theaellengo/csarch2-simulator/issues"
   },
-  "homepage": "https://github.com/theaellengo/csarch2-simulator#readme",
+  "homepage": "https://theaellengo.github.io/csarch2-simulator",
   "dependencies": {
     "config": "^3.3.3",
     "express": "^4.17.1",

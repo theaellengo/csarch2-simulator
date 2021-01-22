@@ -1,10 +1,14 @@
-<br><br>
+{{#if exists}}
+<br>
 <div class="card bg-light">
-  <div class="card-body">
+  <div class="card-header">
     <h5 class="card-title">Result</h5>
+  </div>
+  <div class="card-body">
     <h6 class="card-subtitle mb-2 text-muted">Binary</h6>
     <p class="card-text">{{binary}}</p>
     <h6 class="card-subtitle mb-2 text-muted">Hex</h6>
     <p class="card-text">{{hex}}</p>
   </div>
 </div>
+{{/if}}
