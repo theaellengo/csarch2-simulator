@@ -6,6 +6,7 @@ module.exports = {
     //User Input
     var finput = parseFloat(req.body.inputFloat);
     var exp = parseInt(req.body.inputExp);
+    var exists = true;
     console.log(finput);
     console.log(exp);
 
@@ -29,9 +30,27 @@ module.exports = {
     console.log('Decimal: ' + dec);
     console.log('Exponent: ' + exp);
 
+    var step1 = new Step({
+      num: 1,
+      process: 'Normalize to 16 Decimal Digits',
+      result: dec.join('') + ' x10 ^' + exp
+    });
+
     var eprime = decToBin(398 + exp, 10);
-    var cf = getcf(dec[0]);
+    var cf = getcf(dec[0], eprime);
     var econt = eprime.slice(2, 10);
+
+    var step2 = new Step({
+      num: 2,
+      process: "Get e'",
+      result: exp.toString() + ' + 398 = ' + (exp + 398)
+    });
+
+    var step3 = new Step({
+      num: 2,
+      process: "Get Combination Field'",
+      result: cf.join('')
+    });
 
     var nums = [sign, ...cf, ...econt];
     console.log('Sign, CF, Econt: ' + nums);
@@ -40,98 +59,72 @@ module.exports = {
       //console.log(binToHex(nums.slice(i, i + 4)));
     }
 
-    /**
-     * @param {int} num the integer to be converted to binary
-     * @param {int} len the length of the array
-     * @return {Array[int]} the binary equivalent of parameter num
-     */
-    function decToBin(num, len) {
-      var a = new Array(len);
-      var rem = num;
-      for (i = a.length - 1; i >= 0; i--) {
-        a[i] = rem % 2;
-        rem = ~~(rem / 2);
-      }
-      return a;
-    }
-
-    /**
-     * @param {int} msb the most significant digit
-     * @returns {Array[int]} the combination field
-     */
-    function getcf(msb) {
-      var a = new Array(5);
-      if (msb < 8) {
-        a = decToBin(msb, 5);
-        a[0] = eprime[0];
-        a[1] = eprime[1];
-      } else {
-        a = [1, 1, 0, 0];
-        a[4] = msb == 8 ? 0 : 1;
-      }
-      return a;
-    }
-
-    /** TO DO: denselyPacked
-     *    @param {Array[int]} nums the packed bcd
-     *    @returns {Array[int]} the densley packed bcd
-     **/
-    function denselyPacked(nums) {
-      var bin = nums.map(x => decToBin(x, 4));
-      var bins = [...bin[0], ...bin[1], ...bin[2]];
-      return [];
-    }
-
-    /**
-     * binToHex
-     * @param {Array[Int]} bins binary array of size 4
-     * @returns {char} the hex equivalent of bins
-     */
-    function binToHex(bins) {
-      let map = new Map([
-        [10, 'A'],
-        [11, 'B'],
-        [12, 'C'],
-        [13, 'D'],
-        [14, 'E'],
-        [15, 'F']
-      ]);
-
-      var i;
-      var sum = 0;
-      for (i = 0; i < 4; i++) {
-        bins[i] *= Math.pow(2, 3 - i);
-        sum += bins[i];
-      }
-
-      return sum < 10 ? sum : map.get(sum);
-    }
-
-    var step1 = new Step({
-      num: 1,
-      process: 'processss',
-      result: 0101010101
-    });
-
-    var step2 = new Step({
-      num: 2,
-      process: 'proceewewessss',
-      result: 01010103231101
-    });
-
-    const steps = { step1, step2 };
+    const steps = { step1, step2, step3 };
 
     res.render('index', {
-      binary: dec, // temp (not result)
+      finput: parseFloat(req.body.inputFloat),
+      exists: exists,
+      expinput: parseFloat(req.body.inputExp),
+      binary: dec.join(''), // temp (not result)
       hex: binToHex(dec), // temp (not result)
       steps: steps
     });
   }
 };
 
-//Constuctor for step
+//Constuctor for Step
 function Step({ num, process, result }) {
   this.num = num;
   this.process = process;
   this.result = result;
+}
+
+function decToBin(num, len) {
+  var a = new Array(len);
+  var rem = num;
+  for (i = a.length - 1; i >= 0; i--) {
+    a[i] = rem % 2;
+    rem = ~~(rem / 2);
+  }
+  return a;
+}
+
+function getcf(msb, eprime) {
+  var a = new Array(5);
+  if (msb < 8) {
+    a = decToBin(msb, 5);
+    a[0] = eprime[0];
+    a[1] = eprime[1];
+  } else {
+    a = [1, 1, 0, 0];
+    a[4] = msb == 8 ? 0 : 1;
+  }
+  return a;
+}
+
+function binToHex(bins) {
+  let map = new Map([
+    [10, 'A'],
+    [11, 'B'],
+    [12, 'C'],
+    [13, 'D'],
+    [14, 'E'],
+    [15, 'F']
+  ]);
+
+  var i;
+  var sum = 0;
+  for (i = 0; i < 4; i++) {
+    bins[i] *= Math.pow(2, 3 - i);
+    sum += bins[i];
+  }
+
+  return sum < 10 ? sum : map.get(sum);
+}
+
+/**TODO**/
+function denselyPacked(nums) {
+  var bin = nums.map(x => decToBin(x, 4));
+  var bins = [...bin[0], ...bin[1], ...bin[2]];
+  return [];
 }
