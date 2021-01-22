@@ -6,27 +6,25 @@ module.exports = {
     //User Input
     var finput = parseFloat(req.body.inputFloat);
     var exp = parseInt(req.body.inputExp);
+    var sign = finput >= 0 ? 0 : 1;
     var exists = true;
     console.log(finput);
     console.log(exp);
 
-    var sign = finput >= 0 ? 0 : 1;
     while (finput % 1 != 0) {
-      if (finput > 0) {
-        finput *= 10;
-        exp -= 1;
-      } else {
-        finput /= 10;
-        exp += 1;
-      }
+      finput *= 10;
+      exp -= 1;
     }
+    finput = Math.abs(finput);
 
     var temp = finput.toString().split('');
+    temp = temp.splice(0, 16);
     var dec = new Array(16).fill(0);
     var i;
     for (i = 0; i < temp.length; i++) {
       dec[16 - temp.length + i] = parseInt(temp[i]);
     }
+
     console.log('Decimal: ' + dec);
     console.log('Exponent: ' + exp);
 
@@ -47,7 +45,16 @@ module.exports = {
     });
 
     var step3 = new Step({
-      num: 2,
+      num: 3,
+      process: 'Get Sign Bit',
+      result:
+        sign == 0
+          ? 'Since the number is positive, sign bit is 0'
+          : 'Since the number is negative, sign bit is 1'
+    });
+
+    var step4 = new Step({
+      num: 4,
       process: "Get Combination Field'",
       result: cf.join('')
     });
@@ -55,16 +62,12 @@ module.exports = {
     var nums = [sign, ...cf, ...econt];
     console.log('Sign, CF, Econt: ' + nums);
 
-    for (i = 0; i < nums.length; i += 4) {
-      //console.log(binToHex(nums.slice(i, i + 4)));
-    }
-
-    const steps = { step1, step2, step3 };
+    const steps = { step1, step2, step3, step4 };
 
     res.render('index', {
       finput: parseFloat(req.body.inputFloat),
       exists: exists,
-      expinput: parseFloat(req.body.inputExp),
+      expinput: parseInt(req.body.inputExp),
       binary: dec.join(''), // temp (not result)
       hex: binToHex(dec), // temp (not result)
       steps: steps
