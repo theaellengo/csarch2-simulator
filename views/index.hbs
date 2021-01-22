@@ -1,34 +1,20 @@
-<div class='container'>
-
-  <h2 class="title">Decimal 64 Floating Point Converter</h2>
-  <form name="userinput" id="userinput" method="post">
-    <div class="card bg-light">
-      <div class="card-body">
-        <h5 class="card-title">Input</h5>
-        <div class="row">
-          <div class="col-md-8">
-            <label for="inputFloat" class="form-label">Float</label>
-            <input type="number" class="form-control" id="inputFloat" name="inputFloat">
-          </div>
-          <div class="col-md-4">
-            <label for="inputExp" class="form-label">Exponent</label>
-            <input type="number" class="form-control" id="inputExp" name="inputExp">
-          </div>
+<h2 class="title">Decimal 64 Floating Point Converter</h2>
+<form name="userinput" id="userinput" method="post">
+  <div class="card bg-light">
+    <div class="card-body">
+      <h5 class="card-title">Input</h5>
+      <div class="row">
+        <div class="col-md-8">
+          <label for="inputFloat" class="form-label">Float</label>
+          <input type="number" class="form-control" id="inputFloat" name="inputFloat">
+        </div>
+        <div class="col-md-4">
+          <label for="inputExp" class="form-label">Exponent</label>
+          <input type="number" class="form-control" id="inputExp" name="inputExp">
         </div>
       </div>
     </div>
-    <button type="button" class="btn btn-outline-primary convert" onclick="submit()">Convert</button>
-  </form>
-
-  <br><br><br>
-  <div class="card bg-light">
-    <div class="card-body">
-      <h5 class="card-title">Result</h5>
-      <h6 class="card-subtitle mb-2 text-muted">Binary</h6>
-      <p class="card-text">{{binary}}</p>
-      <h6 class="card-subtitle mb-2 text-muted">Hex</h6>
-      <p class="card-text">{{hex}}</p>
-    </div>
   </div>
-
-</div>
+  <button type="button" class="btn btn-outline-primary convert" onclick="submit()">Convert</button>
+</form>
+<br>

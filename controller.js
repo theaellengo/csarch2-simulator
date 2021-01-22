@@ -106,9 +106,32 @@ module.exports = {
 
       return sum < 10 ? sum : map.get(sum);
     }
+
+    var step1 = new Step({
+      num: 1,
+      process: 'processss',
+      result: 0101010101
+    });
+
+    var step2 = new Step({
+      num: 2,
+      process: 'proceewewessss',
+      result: 01010103231101
+    });
+
+    const steps = { step1, step2 };
+
     res.render('index', {
       binary: dec, // temp (not result)
-      hex: binToHex(dec) // temp (not result)
+      hex: binToHex(dec), // temp (not result)
+      steps: steps
     });
   }
 };
+
+//Constuctor for step
+function Step({ num, process, result }) {
+  this.num = num;
+  this.process = process;
+  this.result = result;
+}
