@@ -48,7 +48,7 @@ module.exports = {
 
     var eprime = decToBin(398 + exp, 10);
     console.log('eprime: ' + eprime);
-    var cf = getcf(dec[0], eprime);
+    var cf = getCf(dec[0], eprime);
     console.log(cf);
     var econt = eprime.slice(2, 10);
     console.log(econt);
@@ -131,10 +131,6 @@ module.exports = {
     var nums = [sign, ...cf, ...econt];
     console.log('Sign, CF, Econt: ' + nums);
 
-    for (i = 0; i < nums.length; i += 4) {
-      //console.log(binToHex(nums.slice(i, i + 4)));
-    }
-
     let finalBinary = '';
     finalBinary = finalBinary.concat(sign);
     finalBinary = finalBinary.concat(cf);
@@ -143,10 +139,10 @@ module.exports = {
     finalBinary = finalBinary.replace(/ /g, '');
 
     res.render('index', {
-      finput: req.body.inputFloat,
+      finput: isNaN(parseFloat(req.body.inputFloat)) ? 0 : req.body.inputFloat,
       exists: exists,
-      expinput: parseFloat(req.body.inputExp),
-      hex: binToHex(finalBinary), // temp (not result)
+      expinput: isNaN(parseInt(req.body.inputExp)) ? 0 : req.body.inputExp,
+      hex: binToHex(finalBinary),
       steps: steps,
       sign: sign,
       cf: cf,
@@ -282,14 +278,17 @@ function decToBin(num, len) {
   return a;
 }
 
-function getcf(msd, eprime) {
+function getCf(msd, eprime) {
   var a = new Array(5);
   if (msd < 8) {
     a = decToBin(msd, 5);
     a[0] = eprime[0];
     a[1] = eprime[1];
   } else {
-    a = [1, 1, 0, 0];
+    a[0] = 1;
+    a[1] = 1;
+    a[2] = eprime[0];
+    a[3] = eprime[1];
     a[4] = msd == 8 ? 0 : 1;
   }
   return a;
