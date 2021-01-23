@@ -1,8 +1,8 @@
-{{#each summary}}
+{{#if exists}}
 <br>
 <div class="card bg-light">
   <div class="card-body">
-    <h5 class="card-title">Summary</h5>
+    <h5 class="card-title">Binary</h5>
     <p class="card-text">
         <span style='color:red'>{{sign}}</span>
         <span style='color:blue'>{{cf}}</span>
@@ -11,4 +11,4 @@
     </p>
   </div>
 </div>
-{{/each}}
+{{/if}}

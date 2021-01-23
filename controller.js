@@ -39,9 +39,9 @@ module.exports = {
       result: dec.join('') + ' x10 ^' + exp
     });
 
-    console.log('step 1 done')
 
-    var eprime = decToBin(398 + exp, 10);
+    var eprime = decToBin(398 + exp, 11)
+    console.log('eprime: ' + eprime)
     var cf = getcf(dec[0], eprime);
     var econt = eprime.slice(2, 10);
     var cc = getCoefficientCont(dec);
@@ -62,7 +62,7 @@ module.exports = {
     });
 
     var step3b = new Step({
-      num: 3,
+      num: 3.1,
       process: "Get E' Continuation",
       result: econt.join('')
     });
@@ -105,16 +105,13 @@ module.exports = {
     })
 
     //===================================================================
-    // Summary
+    // Summary Display
     cf = cf.join('').replace(/,/g, '')
     econt = econt.join('').replace(/,/g, '')
 
-    var summary = new Summary({
-      sign: sign,
-      cf: cf,
-      econt: econt,
-      dense: dpString
-    })
+    //===================================================================
+    // RENDER
+    const steps = { step1, step2, step3, step3b, step4, step5 };
 
     var nums = [sign, ...cf, ...econt];
     console.log('Sign, CF, Econt: ' + nums);
@@ -123,22 +120,29 @@ module.exports = {
       //console.log(binToHex(nums.slice(i, i + 4)));
     }
 
-    const steps = { step1, step2, step3, step4, step5 };
-
-    const sum = {summary}
+    let finalBinary = ''
+    finalBinary = finalBinary.concat(sign)
+    finalBinary = finalBinary.concat(cf)
+    finalBinary = finalBinary.concat(econt)
+    finalBinary = finalBinary.concat(dpString)
+    finalBinary = finalBinary.replace(/ /g, '')
 
     res.render('index', {
       finput: parseFloat(req.body.inputFloat),
       exists: exists,
       expinput: parseFloat(req.body.inputExp),
-      binary: dec.join(''), // temp (not result)
-      hex: binToHex(dec), // temp (not result)
+      hex: binToHex(finalBinary), // temp (not result)
       steps: steps,
-      summary: sum
+      sign: sign,
+      cf: cf,
+      econt: econt,
+      dense: dpString
     });
   }
 };
 
+//=====================================================
+//Functions
 //Constuctor for Step
 function Step({ num, process, result }) {
   this.num = num;
@@ -306,24 +310,24 @@ function getcf(msb, eprime) {
   return a;
 }
 
-function binToHex(bins) {
-  let map = new Map([
-    [10, 'A'],
-    [11, 'B'],
-    [12, 'C'],
-    [13, 'D'],
-    [14, 'E'],
-    [15, 'F']
-  ]);
+function binToHex(binaryString){
+    var output = '';
 
-  var i;
-  var sum = 0;
-  for (i = 0; i < 4; i++) {
-    bins[i] *= Math.pow(2, 3 - i);
-    sum += bins[i];
-  }
+    // For every 4 bits in the binary string
+    for (var i=0; i < binaryString.length; i+=4)
+    {
+        // Grab a chunk of 4 bits
+        var bytes = binaryString.substr(i, 4);
 
-  return sum < 10 ? sum : map.get(sum);
+        // Convert to decimal then hexadecimal
+        var decimal = parseInt(bytes, 2);
+        var hex = decimal.toString(16);
+
+        // Uppercase all the letters and append to output
+        output += hex.toUpperCase();
+    }
+
+    return output;      
 }
 
 /**TODO**/
