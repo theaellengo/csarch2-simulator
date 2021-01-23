@@ -3,16 +3,21 @@ module.exports = {
     res.render('index');
   },
   getinput: function (req, res) {
-    //User Input
-    var fsign = req.body.inputSign;
+    var sign = req.body.inputSign;
     var finput = Math.abs(parseFloat(req.body.inputFloat));
     var exp = parseInt(req.body.inputExp);
-    var sign = fsign;
     var exists = true;
     var isnan = false;
-    console.log(fsign);
-    console.log(finput);
-    console.log(exp);
+
+    /** STEP 1: Get sign bit **/
+    var step1 = new Step({
+      num: 1,
+      process: 'Get sign bit',
+      result:
+        sign == 0
+          ? 'Since the number is positive, sign bit is 0.'
+          : 'Since the number is negative, sign bit is 1.'
+    });
 
     if (isNaN(finput)) {
       finput = 0;
@@ -20,75 +25,55 @@ module.exports = {
     }
     if (isNaN(exp)) exp = 0;
 
+    /** STEP 2: Normalize finput **/
     while (finput % 1 != 0) {
       finput *= 10;
-      if (finput / Math.pow(10, 16) < 1) {
-        exp -= 1;
-      }
-      console.log(finput / Math.pow(10, 16));
+      if (finput / Math.pow(10, 16) < 1) exp -= 1;
     }
-    console.log(finput);
 
     var temp = finput.toString().split('');
     temp = temp.splice(0, 16);
-    while (temp[temp.length - 1] == 0) {
-      temp.pop();
-    }
-    console.log('temp: ' + temp + '   ' + temp.length);
+    while (temp[temp.length - 1] == 0) temp.pop();
     var dec = new Array(16).fill(0);
     var i;
-    for (i = 0; i < temp.length; i++) {
+    for (i = 0; i < temp.length; i++)
       dec[16 - temp.length + i] = parseInt(temp[i]);
-    }
 
-    console.log('Decimal: ' + dec);
+    console.log('Decimal: ' + dec.join(''));
     console.log('Exponent: ' + exp);
-
-    var step1 = new Step({
-      num: 1,
-      process: 'Normalize to 16 Decimal Digits',
-      result: dec.join('') + ' x10 ^' + exp
-    });
-
-    var eprime = decToBin(398 + exp, 10);
-    console.log('eprime: ' + eprime);
-    var cf = getCf(dec[0], eprime, isnan);
-    console.log(cf);
-    var econt = eprime.slice(2, 10);
-    console.log(econt);
-    var cc = getCoefficientCont(dec);
-    var dpbcd = getDensePackBCD(cc);
 
     var step2 = new Step({
       num: 2,
+      process: 'Normalize to 16 decimal digits',
+      result: dec.join('') + ' x10 ^' + exp
+    });
+
+    /** STEP 3: Get e' **/
+    var eprime = decToBin(398 + exp, 10);
+    var step3 = new Step({
+      num: 3,
       process: "Get e'",
       result: exp.toString() + ' + 398 = ' + (exp + 398)
     });
 
-    console.log('step 2 done');
-
-    var step3 = new Step({
-      num: 3,
-      process: 'Get Sign Bit',
-      result:
-        sign == 0
-          ? 'Since the number is positive, sign bit is 0'
-          : 'Since the number is negative, sign bit is 1'
-    });
-
+    /** STEP 4: Get combination field **/
+    var cf = getCf(dec[0], eprime, isnan);
     var step4 = new Step({
       num: 4,
-      process: 'Get Combination Field',
+      process: 'Get combination field',
       result: cf.join('')
     });
 
+    /** STEP 4.1: Get e continuation **/
+    var econt = eprime.slice(2, 10);
     var step4b = new Step({
       num: 4.1,
-      process: "Get E' Continuation",
+      process: "Get e' continuation",
       result: econt.join('')
     });
 
-    // Just for printing the coefficien cont
+    /** STEP 5: Get coefficient continuation **/
+    var cc = getCoefficientCont(dec);
     let ccString = [];
     for (k = 0; k < 60; k += 4) {
       ccString = ccString.concat(cc.slice(k, k + 4));
@@ -98,42 +83,31 @@ module.exports = {
 
     var step5 = new Step({
       num: 5,
-      process: 'Get Coefficient Continuation',
+      process: 'Get coefficient continuation',
       result: ccString
     });
 
-    console.log('step 5 done');
+    /** STEP 5: Convert coefficient continuation to densely packed bcd **/
+    var dpbcd = getDensePackBCD(cc);
 
     let dpString = [];
     for (k = 0; k < 5; k++) {
-      dpString = dpString.concat(dpbcd.slice(k * 10, k * 10 + 3));
-      dpString = dpString.concat(' ');
-      dpString = dpString.concat(dpbcd.slice(k * 10 + 3, k * 10 + 6));
-      dpString = dpString.concat(' ');
-      dpString = dpString.concat(dpbcd.slice(k * 10 + 6, k * 10 + 10));
-      dpString = dpString.concat(' ');
+      dpString = dpString.concat(dpbcd.slice(k * 10, k * 10 + 3) + ' ');
+      dpString = dpString.concat(dpbcd.slice(k * 10 + 3, k * 10 + 6) + ' ');
+      dpString = dpString.concat(dpbcd.slice(k * 10 + 6, k * 10 + 10) + ' ');
     }
     dpString = dpString.join('').replace(/,/g, '');
 
-    //===================================================================
-    // Step 5
     var step6 = new Step({
       num: 6,
-      process: 'Convert Coefficient Continuation to Densely-Packed BCD',
+      process: 'Convert coefficient continuation to densely-packed BCD',
       result: dpString
     });
 
-    //===================================================================
-    // Summary Display
     cf = cf.join('').replace(/,/g, '');
     econt = econt.join('').replace(/,/g, '');
 
-    //===================================================================
-    // RENDER
     const steps = { step1, step2, step3, step4, step4b, step5, step6 };
-
-    var nums = [sign, ...cf, ...econt];
-    console.log('Sign, CF, Econt: ' + nums);
 
     let finalBinary = '';
     finalBinary = finalBinary.concat(sign);
@@ -144,37 +118,24 @@ module.exports = {
 
     res.render('index', {
       finput: parseFloat(req.body.inputFloat),
-      exists: exists,
       expinput: isNaN(parseInt(req.body.inputExp)) ? 0 : req.body.inputExp,
       hex: binToHex(finalBinary),
-      steps: steps,
+      exists: exists,
       sign: sign,
       cf: cf,
       econt: econt,
-      dense: dpString
+      dense: dpString,
+      steps: steps
     });
   }
 };
 
-//=====================================================
-//Functions
-//Constuctor for Step
 function Step({ num, process, result }) {
   this.num = num;
   this.process = process;
   this.result = result;
 }
 
-//Constuctor for Summary
-function Summary({ sign, cf, econt, dense }) {
-  this.sign = sign;
-  this.cf = cf;
-  this.econt = econt;
-  this.dense = dense;
-}
-
-// =========================================================
-// subfunctions for Densely Packed BCD
 function getWX(aei, packed) {
   let aeiStr = aei.toString().replace(/,/g, '');
   let pq = '';
@@ -234,7 +195,6 @@ function getDensePackBCD(cc) {
     aei.push(packed[0]);
     aei.push(packed[4]);
     aei.push(packed[8]);
-    console.log('AEI: ' + aei);
 
     dense[2] = packed[3]; // r = d
     dense[5] = packed[7]; // u = h
@@ -264,7 +224,6 @@ function getDensePackBCD(cc) {
 function getCoefficientCont(decArr) {
   console.log(decArr.length);
   let arr = [];
-
   for (j = 1; j < decArr.length; j++) {
     arr = arr.concat(decToBin(decArr[j], 4));
   }
