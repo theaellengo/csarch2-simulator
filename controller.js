@@ -156,12 +156,16 @@ function Summary({ sign, cf, econt, dense }) {
 
 // ========================================================= 
 // subfunctions for Densely Packed BCD
-function getWX(aei)
+function getWX(aei, packed)
 {
   let aeiStr = aei.toString().replace(/,/g, '')
-  console.log(aeiStr)
+  let pq = ''
+  
   if(aeiStr == '000' )
-    return '00'
+  {
+    pq = pq.concat(packed[9], packed[10])
+    return pq
+  }
   else if(aeiStr == '001' )
     return '00'
   else if(aeiStr =='010')
@@ -175,14 +179,16 @@ function getWX(aei)
 function getPQ(aei, packed)
 {
   let aeiStr = aei.toString().replace(/,/g, '')
-  pq = ''
+  let pq = ''
 
-  if(aeiStr == '001' || aeiStr =='010' || aeiStr =='011')
+  if(aeiStr.charAt(0) == '0')
     pq = pq.concat(packed[1], packed[2])
-  else if(aeiStr == '100' || aeiStr =='101')
+  else if(aeiStr == '100' || aeiStr =='110')
     pq = pq.concat(packed[9], packed[10])
-  else
+  else if(aeiStr == '101')
     pq = pq.concat(packed[5], packed[6])
+  else
+    return '00'
 
   return pq
 }
@@ -245,7 +251,7 @@ function getDensePackBCD(cc)
     else 
       dense[6] = 0
       
-    wx = getWX(aei)
+    wx = getWX(aei, packed)
     pq = getPQ(aei, packed)
     st = getST(aei, packed, AEI_count1)
     dense[0] = pq.charAt(0)
