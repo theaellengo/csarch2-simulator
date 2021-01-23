@@ -18,13 +18,18 @@ module.exports = {
 
     while (finput % 1 != 0) {
       finput *= 10;
-      exp -= 1;
+      if (finput / (10 * 17) < 1) {
+        exp -= 1;
+      }
     }
     console.log(finput);
 
     var temp = finput.toString().split('');
-    console.log('temp: ' + temp + temp.length);
     temp = temp.splice(0, 16);
+    while (temp[temp.length - 1] == 0) {
+      temp.pop();
+    }
+    console.log('temp: ' + temp + '   ' + temp.length);
     var dec = new Array(16).fill(0);
     var i;
     for (i = 0; i < temp.length; i++) {
