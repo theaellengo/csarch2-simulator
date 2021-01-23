@@ -143,7 +143,7 @@ module.exports = {
     finalBinary = finalBinary.replace(/ /g, '');
 
     res.render('index', {
-      finput: isNaN(parseFloat(req.body.inputFloat)) ? 0 : req.body.inputFloat,
+      finput: parseFloat(req.body.inputFloat),
       exists: exists,
       expinput: isNaN(parseInt(req.body.inputExp)) ? 0 : req.body.inputExp,
       hex: binToHex(finalBinary),
@@ -285,7 +285,7 @@ function decToBin(num, len) {
 function getCf(msd, eprime, isnan) {
   var a = new Array(5);
   if (isnan) {
-    a = [1, 1, 1, 1, 1];
+    a = a.fill(1);
     return a;
   }
   if (msd < 8) {
@@ -301,19 +301,11 @@ function getCf(msd, eprime, isnan) {
 
 function binToHex(binaryString) {
   var output = '';
-
-  // For every 4 bits in the binary string
   for (var i = 0; i < binaryString.length; i += 4) {
-    // Grab a chunk of 4 bits
     var bytes = binaryString.substr(i, 4);
-
-    // Convert to decimal then hexadecimal
     var decimal = parseInt(bytes, 2);
     var hex = decimal.toString(16);
-
-    // Uppercase all the letters and append to output
     output += hex.toUpperCase();
   }
-
   return output;
 }
