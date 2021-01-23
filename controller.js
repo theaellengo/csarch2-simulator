@@ -7,6 +7,7 @@ module.exports = {
     var fsign = req.body.inputSign
     var finput = parseFloat(req.body.inputFloat);
     var exp = parseInt(req.body.inputExp);
+    var sign = finput >= 0 ? 0 : 1;
     var exists = true;
     console.log(fsign)
     console.log(finput);
@@ -14,16 +15,13 @@ module.exports = {
 
     var sign = fsign
     while (finput % 1 != 0) {
-      if (finput > 0) {
-        finput *= 10;
-        exp -= 1;
-      } else {
-        finput /= 10;
-        exp += 1;
-      }
+      finput *= 10;
+      exp -= 1;
     }
+    finput = Math.abs(finput);
 
     var temp = finput.toString().split('');
+    temp = temp.splice(0, 16);
     var dec = new Array(16).fill(0);
     var i;
     for (i = 0; i < temp.length; i++) {
@@ -126,6 +124,7 @@ module.exports = {
     finalBinary = finalBinary.concat(econt)
     finalBinary = finalBinary.concat(dpString)
     finalBinary = finalBinary.replace(/ /g, '')
+
 
     res.render('index', {
       finput: parseFloat(req.body.inputFloat),
