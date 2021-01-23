@@ -9,11 +9,15 @@ module.exports = {
     var exp = parseInt(req.body.inputExp);
     var sign = fsign;
     var exists = true;
+    var isnan = false;
     console.log(fsign);
     console.log(finput);
     console.log(exp);
 
-    if (isNaN(finput)) finput = 0;
+    if (isNaN(finput)) {
+      finput = 0;
+      isnan = true;
+    }
     if (isNaN(exp)) exp = 0;
 
     while (finput % 1 != 0) {
@@ -48,7 +52,7 @@ module.exports = {
 
     var eprime = decToBin(398 + exp, 10);
     console.log('eprime: ' + eprime);
-    var cf = getCf(dec[0], eprime);
+    var cf = getCf(dec[0], eprime, isnan);
     console.log(cf);
     var econt = eprime.slice(2, 10);
     console.log(econt);
@@ -139,7 +143,7 @@ module.exports = {
     finalBinary = finalBinary.replace(/ /g, '');
 
     res.render('index', {
-      finput: isNaN(parseFloat(req.body.inputFloat)) ? 0 : req.body.inputFloat,
+      finput: parseFloat(req.body.inputFloat),
       exists: exists,
       expinput: isNaN(parseInt(req.body.inputExp)) ? 0 : req.body.inputExp,
       hex: binToHex(finalBinary),
@@ -278,17 +282,18 @@ function decToBin(num, len) {
   return a;
 }
 
-function getCf(msd, eprime) {
+function getCf(msd, eprime, isnan) {
   var a = new Array(5);
+  if (isnan) {
+    a = a.fill(1);
+    return a;
+  }
   if (msd < 8) {
     a = decToBin(msd, 5);
     a[0] = eprime[0];
     a[1] = eprime[1];
   } else {
-    a[0] = 1;
-    a[1] = 1;
-    a[2] = eprime[0];
-    a[3] = eprime[1];
+    a = [1, 1, eprime[0], eprime[1], 0];
     a[4] = msd == 8 ? 0 : 1;
   }
   return a;
@@ -296,19 +301,11 @@ function getCf(msd, eprime) {
 
 function binToHex(binaryString) {
   var output = '';
-
-  // For every 4 bits in the binary string
   for (var i = 0; i < binaryString.length; i += 4) {
-    // Grab a chunk of 4 bits
     var bytes = binaryString.substr(i, 4);
-
-    // Convert to decimal then hexadecimal
     var decimal = parseInt(bytes, 2);
     var hex = decimal.toString(16);
-
-    // Uppercase all the letters and append to output
     output += hex.toUpperCase();
   }
-
   return output;
 }
