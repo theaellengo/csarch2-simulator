@@ -18,9 +18,10 @@ module.exports = {
 
     while (finput % 1 != 0) {
       finput *= 10;
-      if (finput / (10 * 17) < 1) {
+      if (finput / Math.pow(10, 16) < 1) {
         exp -= 1;
       }
+      console.log(finput / Math.pow(10, 16));
     }
     console.log(finput);
 
@@ -211,8 +212,7 @@ function getST(aei, packed, count) {
   } else if (count == 2) {
     if (aeiStr == '110') return '00';
     else if (aeiStr == '101') return '01';
-    else aeiStr == '011';
-    return '10';
+    else if (aeiStr == '011') return '10';
   } else return '11';
 
   return pq;
@@ -254,10 +254,6 @@ function getDensePackBCD(cc) {
     dense[4] = st.charAt(1);
     dense[7] = wx.charAt(0);
     dense[8] = wx.charAt(1);
-
-    //console.log('pqr: ' + dense[0] + dense[1] + dense[2])
-    //console.log('stu: ' +dense[3] + dense[4] + dense[5])
-    //console.log('vwxy: ' +dense[6] + dense[7] + dense[8] + dense[9])
 
     final = final.concat(dense);
   }
