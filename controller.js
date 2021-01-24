@@ -1,5 +1,3 @@
-const FileSaver = require('file-saver');
-
 module.exports = {
 
   getmain: function (req, res) {
