@@ -11,6 +11,7 @@ module.exports = {
     var exp = parseInt(req.body.inputExp);
     var exists = true;
     var isnan = false;
+    var isinf = false;
 
     /** STEP 1: Get sign bit **/
     var step1 = new Step({
@@ -32,6 +33,11 @@ module.exports = {
     while (finput % 1 != 0) {
       finput *= 10;
       if (finput / Math.pow(10, 16) < 1) exp -= 1;
+    }
+
+    if (exp > 384 || exp < -398) {
+      finput = 0;
+      isinf = true;
     }
 
     var temp = finput.toString().split('');
@@ -60,7 +66,7 @@ module.exports = {
     });
 
     /** STEP 4: Get combination field **/
-    var cf = getCf(dec[0], eprime, isnan);
+    var cf = getCf(dec[0], eprime, isnan, isinf);
     var step4 = new Step({
       num: 4,
       process: 'Get combination field',
@@ -69,6 +75,7 @@ module.exports = {
 
     /** STEP 4.1: Get e continuation **/
     var econt = eprime.slice(2, 10);
+    if (isnan || isinf) econt = econt.fill(1);
     var step4b = new Step({
       num: 4.1,
       process: "Get e' continuation",
@@ -245,8 +252,13 @@ function decToBin(num, len) {
   return a;
 }
 
-function getCf(msd, eprime, isnan) {
+function getCf(msd, eprime, isnan, isinf) {
   var a = new Array(5);
+  if (isinf) {
+    a = a.fill(1);
+    a[4] = 0;
+    return a;
+  }
   if (isnan) {
     a = a.fill(1);
     return a;
