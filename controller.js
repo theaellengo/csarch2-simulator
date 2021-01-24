@@ -1,4 +1,7 @@
+const FileSaver = require('file-saver');
+
 module.exports = {
+
   getmain: function (req, res) {
     res.render('index');
   },
@@ -120,6 +123,7 @@ module.exports = {
       finput: parseFloat(req.body.inputFloat),
       expinput: isNaN(parseInt(req.body.inputExp)) ? 0 : req.body.inputExp,
       hex: binToHex(finalBinary),
+      hidden: finalBinary,
       exists: exists,
       sign: sign,
       cf: cf,

@@ -1,5 +1,4 @@
 <html>
-
 <head>
   <script src="https://kit.fontawesome.com/7b8423fadc.js" crossorigin="anonymous"></script>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato">
@@ -16,6 +15,19 @@
     {{> steps}}
     {{> result}}
   </div>
-</body>
 
+  <script type="text/javascript" src="/FileSaver.js"></script>
+  <script type="text/javascript" src="/jquery-3.5.1.min.js"></script>
+  <script>
+    $("#save").click(function(){
+      $('#hex').text()
+
+      var blob = new Blob(
+        ["Binary: ", $('#binary').text(), 
+        "\nHex: ", $('#hex').text()], 
+        {type: "text/plain;charset=utf-8"});
+      saveAs(blob, "Decimal64.txt")
+    })
+  </script>
+</body>
 </html>

@@ -7,13 +7,15 @@
   <div class="card-body">
     <h6 class="card-subtitle mb-2 text-muted">Binary</h6>
     <p class="card-text">
-      <span style='color:red'>{{sign}}</span>
-      <span style='color:blue'>{{cf}}</span>
-      <span style='color:green'>{{econt}}</span>
-      <span style='color:black'>{{dense}}</span>
+      <span id='sign' style='color:red'>{{sign}}</span>
+      <span id='cf' style='color:blue'>{{cf}}</span>
+      <span id='econt' style='color:green'>{{econt}}</span>
+      <span id='dense' style='color:black'>{{dense}}</span>
     </p>
     <h6 class="card-subtitle mb-2 text-muted">Hex</h6>
-    <p class="card-text">{{hex}}</p>
+    <p id='hex'class="card-text">{{hex}}</p>
+    <span id='binary' style="display:none">{{hidden}}</span>
   </div>
 </div>
+<button class="btn btn-outline-primary convert" id="save" onclick="">Save to Text</button>
 {{/if}}
