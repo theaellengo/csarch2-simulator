@@ -1,5 +1,5 @@
 .container-fluid {
-  max-width: 600px;
+  max-width: 680px;
   margin: auto;
   overflow: hidden;
   padding: 1 2rem;
@@ -75,4 +75,10 @@ body {
 }
 h2 {
   font-size: 1.5rem;
+}
+.info {
+  background-color: transparent;
+  padding: none;
+  margin: none;
+  float: right;
 }
