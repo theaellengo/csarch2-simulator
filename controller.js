@@ -64,7 +64,7 @@ module.exports = {
         ' + 398 = ' +
         (exp + 398) +
         ' (' +
-        decToBin(exp, 5).join('') +
+        decToBin(exp + 398, 5).join('') +
         ')'
     });
 

@@ -1,6 +1,6 @@
 <h1 class="title"><i class="fas fa-calculator"></i> Decimal 64 Floating Point Simulator</h1>
 <br>
-<form name=" userinput" id="userinput" method="post">
+<form name=" userinput" id="userinput" method="post" role="form" data-toggle="validator">
   <div class="card bg-light">
     <div class="card-body">
       <h5 class="card-title">Input <button type="button" class="btn info" data-bs-toggle="popover"
@@ -17,7 +17,7 @@
         </div>
         <div class="col-md-6">
           <label for="inputFloat" class="form-label">Significand</label>
-          <input type="number" step='16' class="form-control" id="inputFloat" name="inputFloat">
+          <input type="number" step='16' class="form-control" id="inputFloat" name="inputFloat" maxlength="16">
         </div>
         <div class="col-md-1 base">
           <label class="form-label"><br></label>
