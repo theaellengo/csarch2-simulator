@@ -1,12 +1,13 @@
 module.exports = {
-
   getmain: function (req, res) {
     res.render('index');
   },
   getinput: function (req, res) {
     var sign = req.body.inputSign;
     var finput = Math.abs(parseFloat(req.body.inputFloat));
-    var exp = parseInt(req.body.inputExp);
+    var exp = isNaN(parseInt(req.body.inputExp))
+      ? 0
+      : parseInt(req.body.inputExp);
     var exists = true;
     var isnan = false;
     var isinf = false;
@@ -25,7 +26,6 @@ module.exports = {
       finput = 0;
       isnan = true;
     }
-    if (isNaN(exp)) exp = 0;
 
     /** STEP 2: Normalize finput **/
     while (finput % 1 != 0) {
@@ -38,8 +38,7 @@ module.exports = {
       isinf = true;
     }
 
-    var temp = finput.toString().split('');
-    temp = temp.splice(0, 16);
+    var temp = finput.toString().split('').splice(0, 16);
     while (temp[temp.length - 1] == 0) temp.pop();
     var dec = new Array(16).fill(0);
     var i;
@@ -60,7 +59,13 @@ module.exports = {
     var step3 = new Step({
       num: 3,
       process: "Get e'",
-      result: exp.toString() + ' + 398 = ' + (exp + 398)
+      result:
+        exp.toString() +
+        ' + 398 = ' +
+        (exp + 398) +
+        ' (' +
+        decToBin(exp, 5).join('') +
+        ')'
     });
 
     /** STEP 4: Get combination field **/

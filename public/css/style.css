@@ -82,3 +82,8 @@ h2 {
   margin: none;
   float: right;
 }
+.base {
+  margin-right: 0;
+  margin-left: 0;
+  padding: 0;
+}
