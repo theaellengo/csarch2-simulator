@@ -39,7 +39,9 @@ module.exports = {
     }
 
     finput = Number(finput.toPrecision(16));
-    var temp = finput.toString().split('').splice(0, 16);
+    console.log(finput);
+    var finput16 = finput.toString().replace('.', '').slice(0, 16);
+    var temp = finput16.split('');
     while (temp[temp.length - 1] == 0) temp.pop();
     var dec = new Array(16).fill(0);
     var i;
