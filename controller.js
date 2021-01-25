@@ -39,7 +39,6 @@ module.exports = {
     }
 
     finput = Number(finput.toPrecision(16));
-    console.log(finput);
     var finput16 = finput.toString().replace('.', '').slice(0, 16);
     var temp = finput16.split('');
     while (temp[temp.length - 1] == 0) temp.pop();
@@ -48,13 +47,10 @@ module.exports = {
     for (i = 0; i < temp.length; i++)
       dec[16 - temp.length + i] = parseInt(temp[i]);
 
-    console.log('Decimal: ' + dec.join(''));
-    console.log('Exponent: ' + exp);
-
     var step2 = new Step({
       num: 2,
       process: 'Normalize to 16 decimal digits',
-      result: dec.join('') + ' x10 ^' + exp
+      result: dec.join('') + ' x10^' + exp
     });
 
     /** STEP 3: Get e' **/
@@ -241,12 +237,10 @@ function getDensePackBCD(cc) {
 }
 
 function getCoefficientCont(decArr) {
-  console.log(decArr.length);
   let arr = [];
   for (j = 1; j < decArr.length; j++) {
     arr = arr.concat(decToBin(decArr[j], 4));
   }
-  console.log(arr);
   return arr;
 }
 
