@@ -38,6 +38,7 @@ module.exports = {
       isinf = true;
     }
 
+    finput = Number(finput.toPrecision(16));
     var temp = finput.toString().split('').splice(0, 16);
     while (temp[temp.length - 1] == 0) temp.pop();
     var dec = new Array(16).fill(0);
@@ -130,8 +131,10 @@ module.exports = {
     finalBinary = finalBinary.replace(/ /g, '');
 
     res.render('index', {
-      finput: parseFloat(req.body.inputFloat),
-      expinput: isNaN(parseInt(req.body.inputExp)) ? 0 : req.body.inputExp,
+      finput: req.body.inputFloat,
+      expinput: isNaN(parseInt(req.body.inputExp))
+        ? 0
+        : parseInt(req.body.inputExp),
       hex: binToHex(finalBinary),
       hidden: finalBinary,
       exists: exists,
