@@ -31,14 +31,13 @@ module.exports = {
     /** STEP 2: Normalize finput **/
     while (finput % 1 != 0) {
       finput *= 10;
-      if (finput / Math.pow(10, 16) < 1) exp -= 1;
+      if (finput / Math.pow(10, 16) < 1) exp--;
     }
-
-    // move decimal
-    var addToExponent = finput.toString().length - 16
-    if(addToExponent > 0) exp += addToExponent
-    finput = moveDecimal(finput, addToExponent)
-    console.log(finput)
+    var finput2 = finput;
+    while (finput2 >= Math.pow(10, 16)) {
+      finput2 /= 10;
+      exp++;
+    }
 
     if (exp > 384) {
       finput = 0;
@@ -49,7 +48,7 @@ module.exports = {
     }
 
     finput = Number(finput.toPrecision(16));
-    var finput16 = finput.toString().replace('.', '').slice(0, 16);
+    var finput16 = finput.toString().replace('.', '');
     var temp = finput16.split('');
     while (temp[temp.length - 1] == 0) temp.pop();
     var dec = new Array(16).fill(0);
@@ -160,12 +159,6 @@ function Step({ num, process, result }) {
   this.num = num;
   this.process = process;
   this.result = result;
-}
-
-function moveDecimal(n, ate) {
-  var l = n.toString().length-16;
-  var v = n/Math.pow(10, l);
-  return v;
 }
 
 function getWX(aei, packed) {
