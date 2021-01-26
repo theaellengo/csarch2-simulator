@@ -7,8 +7,7 @@
 • Output: binary output with space as well as its hexadecimal equivalent (with option to
 paste result in notepad)
 
-Note: No rounding/truncation were manually performed for inputs larger than 16 digits. Such operations seem to be
-ignored, the digits are automatically rounded inconsistently....
+Note: Rounding method used is RTN-TE
 
 ### Installing
 
