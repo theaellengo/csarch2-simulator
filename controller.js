@@ -34,6 +34,12 @@ module.exports = {
       if (finput / Math.pow(10, 16) < 1) exp -= 1;
     }
 
+    // move decimal
+    var addToExponent = finput.toString().length - 16
+    if(addToExponent > 0) exp += addToExponent
+    finput = moveDecimal(finput, addToExponent)
+    console.log(finput)
+
     if (exp > 384) {
       finput = 0;
       isinf = true;
@@ -154,6 +160,12 @@ function Step({ num, process, result }) {
   this.num = num;
   this.process = process;
   this.result = result;
+}
+
+function moveDecimal(n, ate) {
+  var l = n.toString().length-16;
+  var v = n/Math.pow(10, l);
+  return v;
 }
 
 function getWX(aei, packed) {
