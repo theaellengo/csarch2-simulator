@@ -29,14 +29,13 @@ module.exports = {
     }
 
     /** STEP 2: Normalize finput **/
+    while (finput >= Math.pow(10, 16)) {
+      finput /= 10;
+      exp++;
+    }
     while (finput % 1 != 0) {
       finput *= 10;
       if (finput / Math.pow(10, 16) < 1) exp--;
-    }
-    var finput2 = finput;
-    while (finput2 >= Math.pow(10, 16)) {
-      finput2 /= 10;
-      exp++;
     }
 
     if (exp > 384) {
