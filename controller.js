@@ -11,6 +11,7 @@ module.exports = {
     var exists = true;
     var isnan = false;
     var isinf = false;
+    var isdenorm = false;
 
     /** STEP 1: Get sign bit **/
     var step1 = new Step({
@@ -33,9 +34,12 @@ module.exports = {
       if (finput / Math.pow(10, 16) < 1) exp -= 1;
     }
 
-    if (exp > 384 || exp < -398) {
+    if (exp > 384) {
       finput = 0;
       isinf = true;
+    }
+    if (exp < -398) {
+      isdenorm = true;
     }
 
     finput = Number(finput.toPrecision(16));
@@ -55,6 +59,7 @@ module.exports = {
 
     /** STEP 3: Get e' **/
     var eprime = decToBin(398 + exp, 10);
+    if (isdenorm) eprime = decToBin(0, 10);
     var step3 = new Step({
       num: 3,
       process: "Get e'",
@@ -63,12 +68,12 @@ module.exports = {
         ' + 398 = ' +
         (exp + 398) +
         ' (' +
-        decToBin(exp + 398, 5).join('') +
+        eprime.join('') +
         ')'
     });
 
     /** STEP 4: Get combination field **/
-    var cf = getCf(dec[0], eprime, isnan, isinf);
+    var cf = getCf(dec[0], eprime, isnan, isinf, isdenorm);
     var step4 = new Step({
       num: 4,
       process: 'Get combination field',
@@ -254,15 +259,19 @@ function decToBin(num, len) {
   return a;
 }
 
-function getCf(msd, eprime, isnan, isinf) {
+function getCf(msd, eprime, isnan, isinf, isdenorm) {
   var a = new Array(5);
+  if (isnan) {
+    a = a.fill(1);
+    return a;
+  }
   if (isinf) {
     a = a.fill(1);
     a[4] = 0;
     return a;
   }
-  if (isnan) {
-    a = a.fill(1);
+  if (isdenorm) {
+    a = a.fill(0);
     return a;
   }
   if (msd < 8) {
