@@ -59,7 +59,6 @@ module.exports = {
 
     /** STEP 3: Get e' **/
     var eprime = decToBin(398 + exp, 10);
-    if (isdenorm) eprime = decToBin(0, 10);
     var step3 = new Step({
       num: 3,
       process: "Get e'",
@@ -73,7 +72,7 @@ module.exports = {
     });
 
     /** STEP 4: Get combination field **/
-    var cf = getCf(dec[0], eprime, isnan, isinf, isdenorm);
+    var cf = getCf(dec[0], eprime, isnan, isinf);
     var step4 = new Step({
       num: 4,
       process: 'Get combination field',
@@ -83,6 +82,7 @@ module.exports = {
     /** STEP 4.1: Get e continuation **/
     var econt = eprime.slice(2, 10);
     if (isnan || isinf) econt = econt.fill(1);
+    if (isdenorm) econt = econt.fill(0);
     var step4b = new Step({
       num: 4.1,
       process: "Get e' continuation",
@@ -259,21 +259,17 @@ function decToBin(num, len) {
   return a;
 }
 
-function getCf(msd, eprime, isnan, isinf, isdenorm) {
+function getCf(msd, eprime, isnan, isinf) {
   var a = new Array(5);
   if (isnan) {
     a = a.fill(1);
     return a;
-  }
-  if (isinf) {
+  } else if (isinf) {
     a = a.fill(1);
     a[4] = 0;
     return a;
   }
-  if (isdenorm) {
-    a = a.fill(0);
-    return a;
-  }
+
   if (msd < 8) {
     a = decToBin(msd, 5);
     a[0] = eprime[0];
