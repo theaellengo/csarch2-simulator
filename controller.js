@@ -38,7 +38,7 @@ module.exports = {
       finput = 0;
       isinf = true;
     }
-    if (exp < -398) {
+    if (exp < -383) {
       isdenorm = true;
     }
 
