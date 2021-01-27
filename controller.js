@@ -8,6 +8,7 @@ module.exports = {
     var exp = isNaN(parseInt(req.body.inputExp))
       ? 0
       : parseInt(req.body.inputExp);
+    var rounding = parseInt(req.body.inputRound);
     var exists = true;
     var isnan = false;
     var isinf = false;
@@ -46,13 +47,25 @@ module.exports = {
       isdenorm = true;
     }
 
-    finput = Number(finput.toPrecision(16));
-    var finput16 = finput.toString().replace('.', '');
+    var finput16;
+    if (rounding == 0) {
+      let rtnte = Number(finput.toPrecision(16));
+      finput16 = rtnte.toString().replace('.', '').slice(0, 16);
+    } else if (rounding == 1) {
+      if (sign == 0) finput16 = ceiling(Number(finput.toPrecision(17)));
+      else finput16 = finput.toString().slice(0, 16);
+    } else if (rounding == 2) {
+      if (sign == 1) finput16 = ceiling(Number(finput.toPrecision(17)));
+      else finput16 = finput.toString().slice(0, 16);
+    } else {
+      finput16 = finput.toString().slice(0, 16);
+    }
+
     var temp = finput16.split('');
+
     while (temp[temp.length - 1] == 0) temp.pop();
-    var dec = new Array(16).fill(0);
-    var i;
-    for (i = 0; i < temp.length; i++)
+    let dec = new Array(16).fill(0);
+    for (let i = 0; i < temp.length; i++)
       dec[16 - temp.length + i] = parseInt(temp[i]);
 
     var step2 = new Step({
@@ -294,4 +307,14 @@ function binToHex(binaryString) {
     output += hex.toUpperCase();
   }
   return output;
+}
+
+function ceiling(num) {
+  let ceiling = num;
+  let ceilingstr = ceiling.toString().replace('.', '');
+  let ceilingarr = ceilingstr.slice(0, 17).split('');
+  if (!ceilingarr[16] == '0') {
+    ceilingarr[15] = parseInt(ceilingarr[15]) + 1;
+  }
+  return ceilingarr.join('').slice(0, 16);
 }

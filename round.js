@@ -14,10 +14,11 @@ var rtnte = Number(num.toPrecision(16));
 var rtntestr = rtnte.toString().replace('.', '').slice(0, 16);
 console.log(parseInt(rtntestr));
 
+// If sign is positive, floor is truncate, ceiling is ceiling
+// If sign is negative, ceiling is truncate, floor is ceiling
 var trunc = num.toString().slice(0, 16);
 console.log(parseInt(trunc));
 
-// If sign is negative, ceiling is floor and floor is ceiling
 var ceiling = Number(num.toPrecision(17));
 var ceilingstr = ceiling.toString().replace('.', '');
 var ceilingarr = ceilingstr.slice(0, 17).split('');
