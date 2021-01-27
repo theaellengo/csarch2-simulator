@@ -151,7 +151,9 @@ module.exports = {
     finalBinary = finalBinary.replace(/ /g, '');
 
     res.render('index', {
-      finput: req.body.inputFloat,
+      finput: isNaN(parseInt(req.body.inputFloat))
+        ? parseInt(req.body.inputFloat)
+        : req.body.inputFloat,
       expinput: isNaN(parseInt(req.body.inputExp))
         ? 0
         : parseInt(req.body.inputExp),
