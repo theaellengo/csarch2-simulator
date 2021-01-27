@@ -62,7 +62,6 @@ module.exports = {
     }
 
     var temp = finput16.split('');
-
     while (temp[temp.length - 1] == 0) temp.pop();
     let dec = new Array(16).fill(0);
     for (let i = 0; i < temp.length; i++)
@@ -126,8 +125,8 @@ module.exports = {
 
     let dpString = [];
     for (k = 0; k < 5; k++) {
-      dpString = dpString.concat(dpbcd.slice(k * 10, k * 10 + 3) + ' ');
-      dpString = dpString.concat(dpbcd.slice(k * 10 + 3, k * 10 + 6) + ' ');
+      dpString = dpString.concat(dpbcd.slice(k * 10, k * 10 + 3));
+      dpString = dpString.concat(dpbcd.slice(k * 10 + 3, k * 10 + 6));
       dpString = dpString.concat(dpbcd.slice(k * 10 + 6, k * 10 + 10) + ' ');
     }
     dpString = dpString.join('').replace(/,/g, '');
