@@ -55,7 +55,6 @@ module.exports = {
     } else if (rounding == 1) {
       if (sign == 0) finput16 = ceiling(Number(finput));
       else finput16 = finput.toString().slice(0, 16);
-      console.log(finput);
     } else if (rounding == 2) {
       if (sign == 1) finput16 = ceiling(Number(finput));
       else finput16 = finput.toString().slice(0, 16);
