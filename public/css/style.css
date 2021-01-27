@@ -1,5 +1,5 @@
 .container-fluid {
-  max-width: 680px;
+  max-width: 800px;
   margin: auto;
   overflow: hidden;
   padding: 1 2rem;
@@ -86,4 +86,11 @@ h2 {
   margin-right: 0;
   margin-left: 0;
   padding: 0;
+}
+.form-label {
+  padding-bottom: 0;
+  margin-bottom: 0;
+}
+.form-control {
+  margin-bottom: 1rem;
 }
