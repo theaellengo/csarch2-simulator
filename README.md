@@ -7,7 +7,6 @@
 • Output: binary output with space as well as its hexadecimal equivalent (with option to
 paste result in notepad)
 
-Note: Rounding method used is RTN-TE
 
 ### Installing
 
