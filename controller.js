@@ -30,9 +30,9 @@ module.exports = {
     }
 
     /** STEP 2: Normalize finput **/
-    while (finput % 1 != 0) {
+    while (finput % 1 != 0 && finput / Math.pow(10, 16) < 1) {
       finput *= 10;
-      if (finput / Math.pow(10, 16) < 1) exp--;
+      exp--;
     }
     let tempf = finput;
     while (tempf >= Math.pow(10, 16)) {
