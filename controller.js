@@ -53,10 +53,10 @@ module.exports = {
       let rtnte = Number(finput.toPrecision(16));
       finput16 = rtnte.toString().replace('.', '').slice(0, 16);
     } else if (rounding == 1) {
-      if (sign == 0) finput16 = ceiling(Number(finput));
+      if (sign == 0) finput16 = ceiling(finput);
       else finput16 = finput.toString().slice(0, 16);
     } else if (rounding == 2) {
-      if (sign == 1) finput16 = ceiling(Number(finput));
+      if (sign == 1) finput16 = ceiling(finput);
       else finput16 = finput.toString().slice(0, 16);
     } else {
       finput16 = finput.toString().slice(0, 16);
@@ -313,10 +313,16 @@ function binToHex(binaryString) {
 
 function ceiling(num) {
   let ceiling = num.toString();
+  let offset = new Array(ceiling.length - 16).fill('0').join('');
   let ceilingstr = ceiling.toString().replace('.', '');
+  ceilingstr = ceilingstr.slice(0, 16).concat(offset);
   var rem =
-    parseInt(num) - parseInt(ceilingstr.slice(0, 16)) == 0 ? false : true;
-  let ceilingarr = ceilingstr.slice(0, 17).split('');
+    parseFloat(ceiling.slice(15, num.length + 1)) -
+      parseFloat(ceilingstr.slice(15, num.length + 1)) ==
+    0
+      ? false
+      : true;
+  let ceilingarr = ceilingstr.slice(0, 16).split('');
   if (rem) {
     ceilingarr[15] = parseInt(ceilingarr[15]) + 1;
   }
