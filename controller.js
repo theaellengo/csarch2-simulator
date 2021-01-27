@@ -1,10 +1,12 @@
 module.exports = {
+
   getmain: function (req, res) {
     res.render('index');
   },
   getinput: function (req, res) {
     var sign = req.body.inputSign;
-    var finput = Math.abs(parseFloat(req.body.inputFloat));
+    //var finput = BigNumber(req.body.inputFloat);
+    var finput = req.body.inputFloat;
     var exp = isNaN(parseInt(req.body.inputExp))
       ? 0
       : parseInt(req.body.inputExp);
@@ -13,9 +15,10 @@ module.exports = {
     var isnan = false;
     var isinf = false;
     var isdenorm = false;
+    var finput16;
 
-    /** STEP 1: Get sign bit **/
-    var step1 = new Step({
+     /** STEP 1: Get sign bit **/
+     var step1 = new Step({
       num: 1,
       process: 'Get sign bit',
       result:
@@ -23,20 +26,65 @@ module.exports = {
           ? 'Since the number is positive, sign bit is 0.'
           : 'Since the number is negative, sign bit is 1.'
     });
-
+    
     if (isNaN(finput)) {
       finput = 0;
       isnan = true;
     }
 
-    /** STEP 2: Normalize finput **/
-    while (finput >= Math.pow(10, 16)) {
-      finput /= 10;
-      exp++;
+    var padding = 16 - finput.length 
+    if(finput.includes('.')) padding -= 1
+
+    if(padding > 0){
+
+      //for(m=0; m<padding; m++) finput = '0' + finput
+      /** STEP 2: Normalize finput **/
+      finput = parseFloat(finput)
+      while (finput % 1 != 0 && finput / Math.pow(10, 16) < 1) {
+        finput *= 10;
+        exp--;
+      }
+      let tempf = finput;
+      while (tempf >= Math.pow(10, 16)) {
+        tempf /= 10;
+        exp++;
+      }
+
+      if (rounding == 0) {
+        let rtnte = Number(finput.toPrecision(16));
+        finput16 = rtnte.toString().replace('.', '').slice(0, 16);
+      } else if (rounding == 1) {
+        if (sign == 0) finput16 = ceiling(finput.toString());
+        else finput16 = finput.toString().replace('.', '').slice(0, 16);
+      } else if (rounding == 2) {
+        if (sign == 1) finput16 = ceiling(finput.toString());
+        else finput16 = finput.toString().replace('.', '').slice(0, 16);
+      } else {
+        finput16 = finput.toString().replace('.', '').slice(0, 16);
+      }
     }
-    while (finput % 1 != 0) {
-      finput *= 10;
-      if (finput / Math.pow(10, 16) < 1) exp--;
+    else{
+      var addToExponent = parseInt(finput).toString().length - 16
+      console.log(addToExponent)
+
+      finput = move_decimal(finput, addToExponent * -1)
+      exp += addToExponent
+
+      finput16 = BigNumber(finput)
+      console.log('moved: ' + finput16)
+
+      if (rounding == 0) {
+        let rtnte = Number(finput.toPrecision(16));
+        finput16 = rtnte.toString().replace('.', '').slice(0, 16);
+      } else if (rounding == 1) {
+        if (sign == 0) finput16 = finput16.toFixed(0, 2);
+        else finput16 = finput16.toFixed(0, 3);
+      } else if (rounding == 2) {
+        if (sign == 1) finput16 = finput16.toFixed(0, 2);
+        else finput16 = finput16.toFixed(0, 3);
+      } else {
+        finput16 = finput16.toFixed(0, 3);
+      }
     }
 
     if (exp > 384) {
@@ -46,33 +94,26 @@ module.exports = {
     if (exp < -383) {
       isdenorm = true;
     }
-
-    var finput16;
-    if (rounding == 0) {
-      let rtnte = Number(finput.toPrecision(16));
-      finput16 = rtnte.toString().replace('.', '').slice(0, 16);
-    } else if (rounding == 1) {
-      if (sign == 0) finput16 = ceiling(Number(finput.toPrecision(17)));
-      else finput16 = finput.toString().slice(0, 16);
-    } else if (rounding == 2) {
-      if (sign == 1) finput16 = ceiling(Number(finput.toPrecision(17)));
-      else finput16 = finput.toString().slice(0, 16);
-    } else {
-      finput16 = finput.toString().slice(0, 16);
-    }
-
+    
+    console.log('Rounded: ' + finput16)
     var temp = finput16.split('');
     while (temp[temp.length - 1] == 0) temp.pop();
     let dec = new Array(16).fill(0);
     for (let i = 0; i < temp.length; i++)
       dec[16 - temp.length + i] = parseInt(temp[i]);
 
+    var step2res
+    if(padding > 0) 
+      step2res = dec.join('') + ' x10^' + exp
+    else 
+      step2res = finput16 + ' x10^' + exp
+    
     var step2 = new Step({
       num: 2,
       process: 'Normalize to 16 decimal digits',
-      result: dec.join('') + ' x10^' + exp
+      result: step2res
     });
-
+   
     /** STEP 3: Get e' **/
     var eprime = decToBin(398 + exp, 10);
     var step3 = new Step({
@@ -168,10 +209,19 @@ module.exports = {
   }
 };
 
+const BigNumber = require('bignumber.js');
+const move_decimal = require('move-decimal-point');
+
 function Step({ num, process, result }) {
   this.num = num;
   this.process = process;
   this.result = result;
+}
+
+function moveDecimal(n) {
+  var l = n.toString().length-3;
+  var v = n/Math.pow(10, l);
+  return v;
 }
 
 function getWX(aei, packed) {
