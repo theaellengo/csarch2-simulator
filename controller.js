@@ -43,23 +43,32 @@ module.exports = {
     if (exp > 384) {
       finput = 0;
       isinf = true;
-    }
-    if (exp < -383) {
+    } else if (exp < -383) {
       isdenorm = true;
     }
+
+    var str = req.body.inputFloat.replace('.', '').toString();
+    var strarr = str.split('');
+    while (strarr[strarr.length - 1] == 0) strarr.pop();
+    while (strarr[0] == '0') {
+      strarr[0] = strarr[1];
+      strarr.splice(0, 1);
+    }
+
+    tempstr = strarr.join('');
 
     var finput16;
     if (rounding == 0) {
       let rtnte = Number(finput.toPrecision(16));
       finput16 = rtnte.toString().replace('.', '').slice(0, 16);
     } else if (rounding == 1) {
-      if (sign == 0) finput16 = ceiling(finput.toString());
-      else finput16 = finput.toString().replace('.', '').slice(0, 16);
+      if (sign == 0) finput16 = ceiling(tempstr.toString());
+      else finput16 = tempstr.toString().replace('.', '').slice(0, 16);
     } else if (rounding == 2) {
-      if (sign == 1) finput16 = ceiling(finput.toString());
-      else finput16 = finput.toString().replace('.', '').slice(0, 16);
+      if (sign == 1) finput16 = ceiling(tempstr.toString());
+      else finput16 = tempstr.toString().replace('.', '').slice(0, 16);
     } else {
-      finput16 = finput.toString().replace('.', '').slice(0, 16);
+      finput16 = tempstr.toString().replace('.', '').slice(0, 16);
     }
 
     var temp = finput16.split('');
@@ -144,10 +153,7 @@ module.exports = {
     const steps = { step1, step2, step3, step4, step4b, step5, step6 };
 
     let finalBinary = '';
-    finalBinary = finalBinary.concat(sign);
-    finalBinary = finalBinary.concat(cf);
-    finalBinary = finalBinary.concat(econt);
-    finalBinary = finalBinary.concat(dpString);
+    finalBinary = finalBinary.concat(sign, cf, econt, dpString);
     finalBinary = finalBinary.replace(/ /g, '');
 
     res.render('index', {
