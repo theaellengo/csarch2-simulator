@@ -30,13 +30,14 @@ module.exports = {
     }
 
     /** STEP 2: Normalize finput **/
-    while (finput >= Math.pow(10, 16)) {
-      finput /= 10;
-      exp++;
-    }
     while (finput % 1 != 0) {
       finput *= 10;
       if (finput / Math.pow(10, 16) < 1) exp--;
+    }
+    let tempf = finput;
+    while (tempf >= Math.pow(10, 16)) {
+      tempf /= 10;
+      exp++;
     }
 
     if (exp > 384) {
@@ -52,10 +53,11 @@ module.exports = {
       let rtnte = Number(finput.toPrecision(16));
       finput16 = rtnte.toString().replace('.', '').slice(0, 16);
     } else if (rounding == 1) {
-      if (sign == 0) finput16 = ceiling(Number(finput.toPrecision(17)));
+      if (sign == 0) finput16 = ceiling(Number(finput));
       else finput16 = finput.toString().slice(0, 16);
+      console.log(finput);
     } else if (rounding == 2) {
-      if (sign == 1) finput16 = ceiling(Number(finput.toPrecision(17)));
+      if (sign == 1) finput16 = ceiling(Number(finput));
       else finput16 = finput.toString().slice(0, 16);
     } else {
       finput16 = finput.toString().slice(0, 16);
@@ -311,10 +313,12 @@ function binToHex(binaryString) {
 }
 
 function ceiling(num) {
-  let ceiling = num;
+  let ceiling = num.toString();
   let ceilingstr = ceiling.toString().replace('.', '');
+  var rem =
+    parseInt(num) - parseInt(ceilingstr.slice(0, 16)) == 0 ? false : true;
   let ceilingarr = ceilingstr.slice(0, 17).split('');
-  if (!ceilingarr[16] == '0') {
+  if (rem) {
     ceilingarr[15] = parseInt(ceilingarr[15]) + 1;
   }
   return ceilingarr.join('').slice(0, 16);
