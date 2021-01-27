@@ -54,10 +54,10 @@ module.exports = {
       finput16 = rtnte.toString().replace('.', '').slice(0, 16);
     } else if (rounding == 1) {
       if (sign == 0) finput16 = ceiling(finput.toString());
-      else finput16 = finput.toString().slice(0, 16);
+      else finput16 = finput.toString().replace('.', '').slice(0, 16);
     } else if (rounding == 2) {
       if (sign == 1) finput16 = ceiling(finput.toString());
-      else finput16 = finput.toString().slice(0, 16);
+      else finput16 = finput.toString().replace('.', '').slice(0, 16);
     } else {
       finput16 = finput.toString().slice(0, 16);
     }
