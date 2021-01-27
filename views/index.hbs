@@ -7,7 +7,7 @@
           data-bs-placement="auto" data-bs-content="Null input on significand indicates NaN.">
           <i class="fas fa-info-circle" style="color: #666;"></i>
         </button></h5>
-        <div class="row">
+      <div class="row">
         <div class="col-md-2">
           <label for="inputSign" class="form-label">Sign</label>
           <select class="form-control form-select" id="inputSign" name="inputSign">
@@ -26,6 +26,13 @@
         <div class="col-md-3">
           <label for="inputExp" class="form-label">Exponent</label>
           <input type="number" class="form-control" id="inputExp" name="inputExp">
+          <label for="inputRound" class="form-label">Rounding</label>
+          <select class="form-control form-select" id="inputRound" name="inputRound">
+            <option selected value=0>RTN-TE</option>
+            <option value=1>Round up</option>
+            <option value=2>Round down</option>
+            <option value=3>Truncate</option>
+          </select>
         </div>
       </div>
     </div>
