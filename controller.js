@@ -59,7 +59,7 @@ module.exports = {
       if (sign == 1) finput16 = ceiling(finput.toString());
       else finput16 = finput.toString().replace('.', '').slice(0, 16);
     } else {
-      finput16 = finput.toString().slice(0, 16);
+      finput16 = finput.toString().replace('.', '').slice(0, 16);
     }
 
     var temp = finput16.split('');
