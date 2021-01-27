@@ -30,9 +30,9 @@ module.exports = {
     }
 
     /** STEP 2: Normalize finput **/
-    while (finput % 1 != 0) {
+    while (finput % 1 != 0 && finput / Math.pow(10, 16) < 1) {
       finput *= 10;
-      if (finput / Math.pow(10, 16) < 1) exp--;
+      exp--;
     }
     let tempf = finput;
     while (tempf >= Math.pow(10, 16)) {
@@ -54,10 +54,10 @@ module.exports = {
       finput16 = rtnte.toString().replace('.', '').slice(0, 16);
     } else if (rounding == 1) {
       if (sign == 0) finput16 = ceiling(finput.toString());
-      else finput16 = finput.toString().slice(0, 16);
+      else finput16 = finput.toString().replace('.', '').slice(0, 16);
     } else if (rounding == 2) {
       if (sign == 1) finput16 = ceiling(finput.toString());
-      else finput16 = finput.toString().slice(0, 16);
+      else finput16 = finput.toString().replace('.', '').slice(0, 16);
     } else {
       finput16 = finput.toString().slice(0, 16);
     }
