@@ -1,10 +1,11 @@
+const BigNumber = require('bignumber.js');
 module.exports = {
   getmain: function (req, res) {
     res.render('index');
   },
   getinput: function (req, res) {
     var sign = req.body.inputSign;
-    var finput = Math.abs(parseFloat(req.body.inputFloat));
+    var finput = BigNumber(req.body.inputFloat);
     var exp = isNaN(parseInt(req.body.inputExp))
       ? 0
       : parseInt(req.body.inputExp);
@@ -30,13 +31,13 @@ module.exports = {
     }
 
     /** STEP 2: Normalize finput **/
-    while (finput % 1 != 0 && finput / Math.pow(10, 16) < 1) {
-      finput *= 10;
+    while (finput.modulo(1) != 0 && finput.dividedBy(Math.pow(10, 16)) < 1) {
+      finput = finput.times(10);
       exp--;
     }
     let tempf = finput;
     while (tempf >= Math.pow(10, 16)) {
-      tempf /= 10;
+      tempf = tempf.dividedBy(10);
       exp++;
     }
 
@@ -47,7 +48,7 @@ module.exports = {
       isdenorm = true;
     }
 
-    var str = req.body.inputFloat.replace('.', '').toString();
+    var str = req.body.inputFloat.replace('.', '');
     var strarr = str.split('');
     while (strarr[strarr.length - 1] == 0) strarr.pop();
     while (strarr[0] == '0') {
@@ -59,11 +60,9 @@ module.exports = {
 
     var finput16;
     if (rounding == 0) {
-      let rtnte = parseFloat(tempstr).toPrecision(16);
-      finput16 = tempstr.match(/9{16}$/)
-        ? tempstr.slice(0, 16)
-        : rtnte.toString().replace('.', '').slice(0, 16);
-      if (tempstr.match(/9{16}$/)) exp--;
+      let rtnte = BigNumber(tempstr).toPrecision(16);
+      finput16 = rtnte.toString().replace('.', '').slice(0, 16);
+      if (tempstr.match(/9{16,}/)) exp--;
     } else if (rounding == 1) {
       if (sign == 0) finput16 = ceiling(tempstr.toString());
       else finput16 = tempstr.slice(0, 16);
