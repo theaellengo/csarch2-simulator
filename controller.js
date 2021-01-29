@@ -16,7 +16,7 @@ module.exports = {
     var isdenorm = false;
 
     // special case for more than 17 9s
-    if (req.body.inputFloat.match(/9{17,}/)) {
+    if (req.body.inputFloat.replace('.', '').match(/9{17,}/)) {
       if (sign == 0 && (rounding == 0 || rounding == 1)) exp = exp + 16;
       if (sign == 1 && (rounding == 0 || roudning == 2)) exp = exp + 16;
     }
