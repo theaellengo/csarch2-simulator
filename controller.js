@@ -60,7 +60,7 @@ module.exports = {
 
     var finput16;
     if (rounding == 0) {
-      let rtnte = BigNumber(tempstr).toPrecision(16);
+      let rtnte = BigNumber(tempstr);
       finput16 = rtnte.toString().replace('.', '').slice(0, 16);
       if (tempstr.match(/9{16,}/)) exp--;
     } else if (rounding == 1) {
