@@ -38,19 +38,22 @@ module.exports = {
 
     /** STEP 2: Normalize finput **/
     while (
+      !finput.isEqualTo(0) &&
       finput.modulo(1) != 0 &&
       finput.dividedBy(Math.pow(10, 16)).isLessThan(1)
     ) {
       finput = finput.times(10);
       exp--;
+      console.log(finput);
     }
     let tempf = finput;
     while (
-      tempf.modulo(10).isEqualTo(0) ||
+      (!tempf.isEqualTo(0) && tempf.modulo(10).isEqualTo(0)) ||
       tempf.isGreaterThanOrEqualTo(Math.pow(10, 16))
     ) {
       tempf = tempf.dividedBy(10);
       exp++;
+      console.log(tempf);
     }
 
     if (exp > 384) {
@@ -67,7 +70,7 @@ module.exports = {
       strarr[0] = strarr[1];
       strarr.splice(0, 1);
     }
-
+    if (strarr.length == 0) strarr.push(0);
     tempstr = strarr.join('');
 
     var finput16;
