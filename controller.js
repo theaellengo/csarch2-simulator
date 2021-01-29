@@ -15,6 +15,12 @@ module.exports = {
     var isinf = false;
     var isdenorm = false;
 
+    // special case for more than 17 9s
+    if (req.body.inputFloat.match(/9{17,}/)) {
+      if (sign == 0 && (rounding == 0 || rounding == 1)) exp = exp + 16;
+      if (sign == 1 && (rounding == 0 || roudning == 2)) exp = exp + 16;
+    }
+
     /** STEP 1: Get sign bit **/
     var step1 = new Step({
       num: 1,
@@ -31,12 +37,18 @@ module.exports = {
     }
 
     /** STEP 2: Normalize finput **/
-    while (finput.modulo(1) != 0 && finput.dividedBy(Math.pow(10, 16)) < 1) {
+    while (
+      finput.modulo(1) != 0 &&
+      finput.dividedBy(Math.pow(10, 16)).isLessThan(1)
+    ) {
       finput = finput.times(10);
       exp--;
     }
     let tempf = finput;
-    while (tempf >= Math.pow(10, 16)) {
+    while (
+      tempf.modulo(10).isEqualTo(0) ||
+      tempf.isGreaterThanOrEqualTo(Math.pow(10, 16))
+    ) {
       tempf = tempf.dividedBy(10);
       exp++;
     }
@@ -60,9 +72,8 @@ module.exports = {
 
     var finput16;
     if (rounding == 0) {
-      let rtnte = BigNumber(tempstr);
+      let rtnte = BigNumber(tempstr).toPrecision(16);
       finput16 = rtnte.toString().replace('.', '').slice(0, 16);
-      if (tempstr.match(/9{16,}/)) exp--;
     } else if (rounding == 1) {
       if (sign == 0) finput16 = ceiling(tempstr.toString());
       else finput16 = tempstr.slice(0, 16);
@@ -320,19 +331,17 @@ function binToHex(binaryString) {
 }
 
 function ceiling(num) {
-  let ceiling = num.toString();
-  let offset = new Array(ceiling.length - 16).fill('0').join('');
+  let ceiling = num;
+  let offset =
+    num.length > 16 ? new Array(ceiling.length - 16).fill('0').join('') : '';
   let ceilingstr = ceiling.toString().replace('.', '');
   ceilingstr = ceilingstr.slice(0, 16).concat(offset);
-  var rem =
-    parseFloat(ceiling.slice(15, num.length + 1)) -
-      parseFloat(ceilingstr.slice(15, num.length + 1)) ==
-    0
-      ? false
-      : true;
-  let ceilingarr = ceilingstr.slice(0, 16).split('');
+  var rem = BigNumber(ceiling).minus(BigNumber(ceilingstr)).isEqualTo(0)
+    ? false
+    : true;
+  var ceiling16 = BigNumber(ceiling.slice(0, 16));
   if (rem) {
-    ceilingarr[15] = parseInt(ceilingarr[15]) + 1;
+    ceiling16++;
   }
-  return ceilingarr.join('').slice(0, 16);
+  return ceiling16.toString();
 }
