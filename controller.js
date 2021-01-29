@@ -58,7 +58,6 @@ module.exports = {
 
     // check if infinity
     if (exp > 369) {
-      finput = 0;
       isinf = true;
     }
     // check if demormalized
@@ -80,6 +79,7 @@ module.exports = {
       exp = 0;
     }
     tempstr = strarr.join(''); // convert arr to string
+    if (isinf) tempstr = '0';
 
     var finput16;
     if (rounding == 0) {
