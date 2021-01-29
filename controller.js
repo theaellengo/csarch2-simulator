@@ -100,6 +100,7 @@ module.exports = {
     }
 
     let temp = finput16.split(''); // significant digits to array
+    while (temp[temp.length - 1] == 0) temp.pop();
     let dec = new Array(16).fill(0); // init array of size 16, fill with 0
     for (let i = 0; i < temp.length; i++)
       dec[16 - temp.length + i] = parseInt(temp[i]); // move significant digits to dec
