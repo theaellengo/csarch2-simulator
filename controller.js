@@ -44,7 +44,6 @@ module.exports = {
     ) {
       finput = finput.times(10);
       exp--;
-      console.log(finput);
     }
     let tempf = finput;
     while (
@@ -53,7 +52,6 @@ module.exports = {
     ) {
       tempf = tempf.dividedBy(10);
       exp++;
-      console.log(tempf);
     }
 
     if (exp > 384) {
@@ -104,6 +102,7 @@ module.exports = {
 
     /** STEP 3: Get e' **/
     var eprime = decToBin(398 + exp, 10);
+    if (exp + 398 <= 0) eprime = decToBin(0, 10);
     var step3 = new Step({
       num: 3,
       process: "Get e'",
