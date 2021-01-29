@@ -307,18 +307,18 @@ function getCf(msd, eprime, isnan, isinf) {
   if (isnan) {
     a = a.fill(1);
     return a;
-  } else if (isinf) {
+  }
+  if (isinf) {
     a = a.fill(1);
     a[4] = 0;
     return a;
   }
-
   if (msd < 8) {
     a = decToBin(msd, 5);
     a[0] = eprime[0];
     a[1] = eprime[1];
   } else {
-    a = [1, 1, eprime[0], eprime[1], 0];
+    a = [1, 1, 0, 0, 0];
     a[4] = msd == 8 ? 0 : 1;
   }
   return a;
