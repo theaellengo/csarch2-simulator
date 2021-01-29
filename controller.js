@@ -54,10 +54,10 @@ module.exports = {
       exp++;
     }
 
-    if (exp > 384) {
+    if (exp > 369) {
       finput = 0;
       isinf = true;
-    } else if (exp < -383) {
+    } else if (exp < -398) {
       isdenorm = true;
     }
 
