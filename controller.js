@@ -15,7 +15,7 @@ module.exports = {
     var isinf = false;
     var isdenorm = false;
 
-    // special case for more than 17 9s
+    // special case for 9{17,}
     if (req.body.inputFloat.replace('.', '').match(/9{17,}/)) {
       if (sign == 0 && (rounding == 0 || rounding == 1)) exp = exp + 16;
       if (sign == 1 && (rounding == 0 || roudning == 2)) exp = exp + 16;
@@ -37,62 +37,72 @@ module.exports = {
     }
 
     /** STEP 2: Normalize finput **/
-    while (
-      !finput.isEqualTo(0) &&
-      finput.modulo(1) != 0 &&
-      finput.dividedBy(Math.pow(10, 16)).isLessThan(1)
-    ) {
-      finput = finput.times(10);
-      exp--;
-    }
-    let tempf = finput;
-    while (
-      (!tempf.isEqualTo(0) && tempf.modulo(10).isEqualTo(0)) ||
-      tempf.isGreaterThanOrEqualTo(Math.pow(10, 16))
-    ) {
-      tempf = tempf.dividedBy(10);
-      exp++;
+    // if input is non-zero number
+    if (!finput.isEqualTo(0)) {
+      while (
+        finput.modulo(1) != 0 && // input has non-zero decimal values
+        finput.dividedBy(Math.pow(10, 16)).isLessThan(1) // and input has 16 digits or less
+      ) {
+        finput = finput.times(10);
+        exp--;
+      }
+      let tempf = finput;
+      while (
+        tempf.modulo(10).isEqualTo(0) || // if least significant digit is 0
+        tempf.isGreaterThanOrEqualTo(Math.pow(10, 16)) // if tempf has more than 16 digits
+      ) {
+        tempf = tempf.dividedBy(10);
+        exp++;
+      }
     }
 
+    // check if infinity
     if (exp > 369) {
       finput = 0;
       isinf = true;
-    } else if (exp < -398) {
+    }
+    // check if demormalized
+    else if (exp < -398) {
       isdenorm = true;
     }
 
-    var str = req.body.inputFloat.replace('.', '');
-    var strarr = str.split('');
-    while (strarr[strarr.length - 1] == 0) strarr.pop();
+    var str = req.body.inputFloat.replace('.', ''); // remove decimal point if exists
+    var strarr = str.split(''); // split to array
+    while (strarr[strarr.length - 1] == 0) strarr.pop(); // remove all trailing zeroes
     while (strarr[0] == '0') {
+      // remove all leading zeroes
       strarr[0] = strarr[1];
       strarr.splice(0, 1);
     }
     if (strarr.length == 0) {
+      // if array is empty
       strarr.push(0);
       exp = 0;
     }
-    tempstr = strarr.join('');
+    tempstr = strarr.join(''); // convert arr to string
 
     var finput16;
     if (rounding == 0) {
+      // round to nearest ties to even
       let rtnte = BigNumber(tempstr).toPrecision(16);
       finput16 = rtnte.toString().replace('.', '').slice(0, 16);
     } else if (rounding == 1) {
+      // round up
       if (sign == 0) finput16 = ceiling(tempstr.toString());
       else finput16 = tempstr.slice(0, 16);
     } else if (rounding == 2) {
+      //round down
       if (sign == 1) finput16 = ceiling(tempstr.toString());
       else finput16 = tempstr.slice(0, 16);
     } else {
+      //truncate
       finput16 = tempstr.slice(0, 16);
     }
 
-    var temp = finput16.split('');
-    while (temp[temp.length - 1] == 0) temp.pop();
-    let dec = new Array(16).fill(0);
+    let temp = finput16.split(''); // significant digits to array
+    let dec = new Array(16).fill(0); // init array of size 16, fill with 0
     for (let i = 0; i < temp.length; i++)
-      dec[16 - temp.length + i] = parseInt(temp[i]);
+      dec[16 - temp.length + i] = parseInt(temp[i]); // move significant digits to dec
 
     var step2 = new Step({
       num: 2,
@@ -101,8 +111,8 @@ module.exports = {
     });
 
     /** STEP 3: Get e' **/
-    var eprime = decToBin(398 + exp, 10);
-    if (exp + 398 <= 0) eprime = decToBin(0, 10);
+    var eprime = decToBin(398 + exp, 10); // get binary of 398 + exp, array of size 10
+    if (exp + 398 <= 0) eprime = decToBin(0, 10); // if e' is less than 0, return array of 0s
     var step3 = new Step({
       num: 3,
       process: "Get e'",
@@ -116,7 +126,7 @@ module.exports = {
     });
 
     /** STEP 4: Get combination field **/
-    var cf = getCf(dec[0], eprime, isnan, isinf);
+    var cf = getCf(dec[0], eprime, isnan, isinf); // get combination field
     var step4 = new Step({
       num: 4,
       process: 'Get combination field',
@@ -124,9 +134,9 @@ module.exports = {
     });
 
     /** STEP 4.1: Get e continuation **/
-    var econt = eprime.slice(2, 10);
-    if (isnan || isinf) econt = econt.fill(1);
-    if (isdenorm) econt = econt.fill(0);
+    var econt = eprime.slice(2, 10); // get last 8 bits of e'
+    if (isnan || isinf) econt = econt.fill(1); // if inf or nan, econt is all 1s
+    if (isdenorm) econt = econt.fill(0); // if denormal, econt is all 0s
     var step4b = new Step({
       num: 4.1,
       process: "Get e' continuation",
@@ -292,6 +302,7 @@ function getCoefficientCont(decArr) {
   return arr;
 }
 
+// returns binary array of size len
 function decToBin(num, len) {
   var a = new Array(len);
   var rem = num;
