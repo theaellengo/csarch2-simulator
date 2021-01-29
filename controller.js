@@ -78,8 +78,7 @@ module.exports = {
       strarr.push(0);
       exp = 0;
     }
-    tempstr = strarr.join(''); // convert arr to string
-    if (isinf) tempstr = '0';
+    tempstr = isinf ? '0' : strarr.join(''); // convert arr to string
 
     var finput16;
     if (rounding == 0) {
@@ -114,6 +113,7 @@ module.exports = {
     /** STEP 3: Get e' **/
     var eprime = decToBin(398 + exp, 10); // get binary of 398 + exp, array of size 10
     if (exp + 398 <= 0) eprime = decToBin(0, 10); // if e' is less than 0, return array of 0s
+    if (isinf) eprime = Array(10).fill(1);
     var step3 = new Step({
       num: 3,
       process: "Get e'",
