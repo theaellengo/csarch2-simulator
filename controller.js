@@ -70,7 +70,10 @@ module.exports = {
       strarr[0] = strarr[1];
       strarr.splice(0, 1);
     }
-    if (strarr.length == 0) strarr.push(0);
+    if (strarr.length == 0) {
+      strarr.push(0);
+      exp = 0;
+    }
     tempstr = strarr.join('');
 
     var finput16;
