@@ -115,7 +115,6 @@ module.exports = {
     /** STEP 3: Get e' **/
     var eprime = decToBin(398 + exp, 10); // get binary of 398 + exp, array of size 10
     if (exp + 398 <= 0) eprime = decToBin(0, 10); // if e' is less than 0, return array of 0s
-    if (isinf) eprime = Array(10).fill(1);
     var step3 = new Step({
       num: 3,
       process: "Get e'",
@@ -127,6 +126,8 @@ module.exports = {
         eprime.join('') +
         ')'
     });
+
+    if (isinf) eprime = Array(10).fill(1);
 
     /** STEP 4: Get combination field **/
     var cf = getCf(dec[0], eprime, isnan, isinf); // get combination field
