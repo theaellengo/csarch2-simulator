@@ -60,44 +60,11 @@ module.exports = {
     if (exp > 369) isinf = true;
     else if (exp < -398) isdenorm = true;
 
-    var str = req.body.inputFloat
-      .replace('.', '')
-      .replace('-', '')
-      .replace('+', ''); // remove decimal point if exists
-    var strarr = str.split(''); // split to array
-    while (strarr[strarr.length - 1] == 0) strarr.pop(); // remove all trailing zeroes
-    while (strarr[0] == '0') {
-      // remove all leading zeroes
-      strarr[0] = strarr[1];
-      strarr.splice(0, 1);
-    }
-    if (strarr.length == 0) {
-      // if array is empty
-      strarr.push(0);
-      exp = 0;
-    }
-    tempstr = strarr.join(''); // convert arr to string
-
-    var finput16;
-    if (rounding == 0) {
-      // round to nearest ties to even
-      let rtnte = BigNumber(tempstr).toPrecision(16);
-      finput16 = rtnte.toString().replace('.', '').slice(0, 16);
-    } else if (rounding == 1) {
-      // round up
-      if (sign == 0) finput16 = ceiling(tempstr.toString());
-      else finput16 = tempstr.slice(0, 16);
-    } else if (rounding == 2) {
-      //round down
-      if (sign == 1) finput16 = ceiling(tempstr.toString());
-      else finput16 = tempstr.slice(0, 16);
-    } else {
-      //truncate
-      finput16 = tempstr.slice(0, 16);
-    }
+    tempstr = getSigDigits(req.body.inputFloat);
+    var finput16 = round(tempstr, rounding, sign);
 
     let temp = finput16.split(''); // significant digits to array
-    while (temp[temp.length - 1] == 0) temp.pop();
+    while (temp[temp.length - 1] == 0) temp.pop(); // remove trailing zeroes
     let dec = new Array(16).fill(0); // init array of size 16, fill with 0
     for (let i = 0; i < temp.length; i++)
       dec[16 - temp.length + i] = parseInt(temp[i]); // move significant digits to dec
@@ -264,18 +231,14 @@ function getDensePackBCD(cc) {
   for (x = 0; x < 5; x++) {
     aei = [];
     packed = cc.slice(x * 12, (x + 1) * 12);
-    aei.push(packed[0]);
-    aei.push(packed[4]);
-    aei.push(packed[8]);
+    aei.push(packed[0], packed[4], packed[8]);
 
     dense[2] = packed[3]; // r = d
     dense[5] = packed[7]; // u = h
     dense[9] = packed[11]; // y = m
 
     AEI_count1 = (aei.toString().match(/1/g) || []).length; // count no. of 1s in AEI
-
-    if (AEI_count1 > 0) dense[6] = 1;
-    else dense[6] = 0;
+    dense[6] = AEI_count1 > 0 ? 1 : 0;
 
     wx = getWX(aei, packed);
     pq = getPQ(aei, packed);
@@ -314,22 +277,14 @@ function decToBin(num, len) {
 
 function getCf(msd, eprime, isnan, isinf) {
   var a = new Array(5);
-  if (isnan) {
-    a = a.fill(1);
-    return a;
-  }
-  if (isinf) {
-    a = a.fill(1);
-    a[4] = 0;
-    return a;
-  }
+  if (isnan) return a.fill(1);
+  if (isinf) return [1, 1, 1, 1, 0];
   if (msd < 8) {
     a = decToBin(msd, 5);
     a[0] = eprime[0];
     a[1] = eprime[1];
   } else {
-    a = [1, 1, 0, 0, 0];
-    a[4] = msd == 8 ? 0 : 1;
+    a = [1, 1, 0, 0, msd == 8 ? 0 : 1];
   }
   return a;
 }
@@ -359,4 +314,41 @@ function ceiling(num) {
     ceiling16++;
   }
   return ceiling16.toString();
+}
+
+function round(tempstr, rounding, sign) {
+  if (rounding == 0) {
+    // round to nearest ties to even
+    BigNumber.config({ ROUNDING_MODE: 6 });
+    let rtnte = BigNumber(tempstr).toPrecision(16);
+    return rtnte.toString().replace('.', '').slice(0, 16);
+  } else if (rounding == 1) {
+    // round up
+    if (sign == 0) return ceiling(tempstr.toString());
+    else return tempstr.slice(0, 16);
+  } else if (rounding == 2) {
+    //round down
+    if (sign == 1) return ceiling(tempstr.toString());
+    else return tempstr.slice(0, 16);
+  } else {
+    //truncate
+    return tempstr.slice(0, 16);
+  }
+}
+
+function getSigDigits(inputstr) {
+  let str = inputstr.replace('.', '').replace('-', '').replace('+', ''); // remove decimal point if exists
+  let strarr = str.split(''); // split to array
+  while (strarr[strarr.length - 1] == 0) strarr.pop(); // remove all trailing zeroes
+  while (strarr[0] == '0') {
+    // remove all leading zeroes
+    strarr[0] = strarr[1];
+    strarr.splice(0, 1);
+  }
+  if (strarr.length == 0) {
+    // if array is empty
+    strarr.push(0);
+    exp = 0;
+  }
+  return strarr.join(''); // convert arr to string
 }
