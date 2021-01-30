@@ -79,6 +79,7 @@ module.exports = {
       dec.push(0);
     }
     dec = dec.splice(dec.length - 16, dec.length);
+    if (exp <= 369) isinf = false;
 
     var step2 = new Step({
       num: 2,
