@@ -69,6 +69,17 @@ module.exports = {
     for (let i = 0; i < temp.length; i++)
       dec[16 - temp.length + i] = parseInt(temp[i]); // move significant digits to dec
 
+    while (
+      exp > 369 &&
+      !BigNumber(dec.join(''))
+        .dividedBy(Math.pow(10, 15))
+        .isGreaterThanOrEqualTo(1)
+    ) {
+      exp--;
+      dec.push(0);
+    }
+    dec = dec.splice(dec.length - 16, dec.length);
+
     var step2 = new Step({
       num: 2,
       process: 'Normalize to 16 decimal digits',
@@ -100,7 +111,6 @@ module.exports = {
 
     /** STEP 4.1: Get e continuation **/
     var econt = eprime.slice(2, 10); // get last 8 bits of e'
-    //if (isnan || isinf) econt = econt.fill(1); // if inf or nan, econt is all 1s
     if (isdenorm) econt = econt.fill(0); // if denormal, econt is all 0s
     var step4b = new Step({
       num: 4.1,
