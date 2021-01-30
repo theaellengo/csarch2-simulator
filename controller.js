@@ -61,11 +61,10 @@ module.exports = {
     else if (exp < -398) isdenorm = true;
 
     tempstr = getSigDigits(req.body.inputFloat);
-    var finput16 = round(tempstr, rounding, sign);
-
+    let finput16 = round(tempstr, rounding, sign);
     let temp = finput16.split(''); // significant digits to array
     while (temp[temp.length - 1] == 0) temp.pop(); // remove trailing zeroes
-    let dec = new Array(16).fill(0); // init array of size 16, fill with 0
+    var dec = new Array(16).fill(0); // init array of size 16, fill with 0
     for (let i = 0; i < temp.length; i++)
       dec[16 - temp.length + i] = parseInt(temp[i]); // move significant digits to dec
 
@@ -295,7 +294,7 @@ function getCf(msd, eprime, isnan, isinf) {
     a[0] = eprime[0];
     a[1] = eprime[1];
   } else {
-    a = [1, 1, 0, 0, msd == 8 ? 0 : 1];
+    a = [1, 1, eprime[0], eprime[1], msd == 8 ? 0 : 1];
   }
   return a;
 }
@@ -321,9 +320,7 @@ function ceiling(num) {
     ? false
     : true;
   var ceiling16 = BigNumber(ceiling.slice(0, 16));
-  if (rem) {
-    ceiling16++;
-  }
+  if (rem) ceiling16++;
   return ceiling16.toString();
 }
 
