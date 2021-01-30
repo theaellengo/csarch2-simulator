@@ -5,7 +5,7 @@ module.exports = {
   },
   getinput: function (req, res) {
     var sign = req.body.inputSign;
-    var finput = BigNumber(req.body.inputFloat);
+    var finput = BigNumber(req.body.inputFloat).abs();
     var exp = isNaN(parseInt(req.body.inputExp))
       ? 0
       : parseInt(req.body.inputExp);
@@ -56,16 +56,14 @@ module.exports = {
       }
     }
 
-    // check if infinity
-    if (exp > 369) {
-      isinf = true;
-    }
-    // check if demormalized
-    else if (exp < -398) {
-      isdenorm = true;
-    }
+    // check if infinity || demormalized
+    if (exp > 369) isinf = true;
+    else if (exp < -398) isdenorm = true;
 
-    var str = req.body.inputFloat.replace('.', ''); // remove decimal point if exists
+    var str = req.body.inputFloat
+      .replace('.', '')
+      .replace('-', '')
+      .replace('+', ''); // remove decimal point if exists
     var strarr = str.split(''); // split to array
     while (strarr[strarr.length - 1] == 0) strarr.pop(); // remove all trailing zeroes
     while (strarr[0] == '0') {
@@ -125,8 +123,6 @@ module.exports = {
         ')'
     });
 
-    if (isinf) eprime = Array(10).fill(1);
-
     /** STEP 4: Get combination field **/
     var cf = getCf(dec[0], eprime, isnan, isinf); // get combination field
     var step4 = new Step({
@@ -137,7 +133,7 @@ module.exports = {
 
     /** STEP 4.1: Get e continuation **/
     var econt = eprime.slice(2, 10); // get last 8 bits of e'
-    if (isnan || isinf) econt = econt.fill(1); // if inf or nan, econt is all 1s
+    //if (isnan || isinf) econt = econt.fill(1); // if inf or nan, econt is all 1s
     if (isdenorm) econt = econt.fill(0); // if denormal, econt is all 0s
     var step4b = new Step({
       num: 4.1,
@@ -148,10 +144,8 @@ module.exports = {
     /** STEP 5: Get coefficient continuation **/
     var cc = getCoefficientCont(dec);
     let ccString = [];
-    for (k = 0; k < 60; k += 4) {
-      ccString = ccString.concat(cc.slice(k, k + 4));
-      ccString = ccString.concat(' ');
-    }
+    for (k = 0; k < 60; k += 4)
+      ccString = ccString.concat(cc.slice(k, k + 4) + ' ');
     ccString = ccString.join('').replace(/,/g, '');
 
     var step5 = new Step({
@@ -165,9 +159,11 @@ module.exports = {
 
     let dpString = [];
     for (k = 0; k < 5; k++) {
-      dpString = dpString.concat(dpbcd.slice(k * 10, k * 10 + 3));
-      dpString = dpString.concat(dpbcd.slice(k * 10 + 3, k * 10 + 6));
-      dpString = dpString.concat(dpbcd.slice(k * 10 + 6, k * 10 + 10) + ' ');
+      dpString = dpString.concat(
+        dpbcd.slice(k * 10, k * 10 + 3),
+        dpbcd.slice(k * 10 + 3, k * 10 + 6),
+        dpbcd.slice(k * 10 + 6, k * 10 + 10) + ' '
+      );
     }
     dpString = dpString.join('').replace(/,/g, '');
 
@@ -183,8 +179,9 @@ module.exports = {
     const steps = { step1, step2, step3, step4, step4b, step5, step6 };
 
     let finalBinary = '';
-    finalBinary = finalBinary.concat(sign, cf, econt, dpString);
-    finalBinary = finalBinary.replace(/ /g, '');
+    finalBinary = finalBinary
+      .concat(sign, cf, econt, dpString)
+      .replace(/ /g, '');
 
     res.render('index', {
       finput: isNaN(parseInt(req.body.inputFloat))
