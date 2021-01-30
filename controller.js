@@ -110,8 +110,6 @@ module.exports = {
       result: dec.join('') + ' x10^' + exp
     });
 
-    if (isinf) dec = Array(16).fill(0);
-
     /** STEP 3: Get e' **/
     var eprime = decToBin(398 + exp, 10); // get binary of 398 + exp, array of size 10
     if (exp + 398 <= 0) eprime = decToBin(0, 10); // if e' is less than 0, return array of 0s
