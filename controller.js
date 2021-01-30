@@ -186,7 +186,7 @@ module.exports = {
     res.render('index', {
       finput: isNaN(parseInt(req.body.inputFloat))
         ? parseInt(req.body.inputFloat)
-        : req.body.inputFloat,
+        : req.body.inputFloat.replace('-', '').replace('+', ''),
       expinput: isNaN(parseInt(req.body.inputExp))
         ? 0
         : parseInt(req.body.inputExp),
