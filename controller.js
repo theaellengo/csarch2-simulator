@@ -38,7 +38,7 @@ module.exports = {
 
     /** STEP 2: Normalize finput **/
     // if input is non-zero number
-    if (!finput.isEqualTo(0)) {
+    if (!isnan && !finput.isZero()) {
       while (
         finput.modulo(1) != 0 && // input has non-zero decimal values
         finput.dividedBy(Math.pow(10, 16)).isLessThan(1) // and input has 16 digits or less
@@ -78,7 +78,7 @@ module.exports = {
       strarr.push(0);
       exp = 0;
     }
-    tempstr = isinf ? '0' : strarr.join(''); // convert arr to string
+    tempstr = strarr.join(''); // convert arr to string
 
     var finput16;
     if (rounding == 0) {
@@ -109,6 +109,8 @@ module.exports = {
       process: 'Normalize to 16 decimal digits',
       result: dec.join('') + ' x10^' + exp
     });
+
+    if (isinf) dec = Array(16).fill(0);
 
     /** STEP 3: Get e' **/
     var eprime = decToBin(398 + exp, 10); // get binary of 398 + exp, array of size 10
